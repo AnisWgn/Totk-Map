@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { SaveReader } from "./save-reader.js";
+import { readMapMarkers } from "./map-markers.js";
 import {
   readInventory,
   readQuests,
@@ -28,6 +29,7 @@ export function createDefaultSettings() {
     showLink: true,
     runInBackground: false,
     linkOpacity: 45,
+    recompLive: process.platform === "win32",
   };
 }
 
@@ -153,6 +155,7 @@ export class SaveSyncEngine {
       compendium: readCompendium(reader, this.definitions.compendium),
       quests: readQuests(reader, this.definitions.quests),
       inventory: readInventory(reader),
+      mapMarkers: readMapMarkers(reader),
       revision: sha256Hex(reader.bytes),
       file: filePath,
       savedAt,
