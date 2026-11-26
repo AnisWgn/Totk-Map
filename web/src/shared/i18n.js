@@ -289,6 +289,9 @@ export const I18N = (() => {
     Idioma: "Language",
     "Automático (Windows)": "Automatic (Windows)",
     "Al cerrar la página": "When closing the page",
+    "Mantener Totkmap en la bandeja": "Keep Totkmap in the tray",
+    "Al cerrar la última pestaña, Totkmap se cierra después de unos segundos. Activa esta opción para seguir leyendo guardados en segundo plano.":
+      "Closing the last tab exits Totkmap after a few seconds. Enable this option to keep monitoring saves in the background.",
     "Mantener HyruleSync en la bandeja": "Keep HyruleSync in the tray",
     "Al cerrar la última pestaña, HyruleSync se cierra después de unos segundos. Activa esta opción para seguir leyendo guardados en segundo plano.":
       "Closing the last tab exits HyruleSync after a few seconds. Enable this option to keep monitoring saves in the background.",
@@ -381,6 +384,7 @@ export const I18N = (() => {
       "Load .sav opens a snapshot. Watch folder selects the save with the most playtime. Selecting one account folder enables Autosync. Leave the app running while you play. Enable the tray option in About to keep monitoring with the browser tab closed.",
     "Todo funciona localmente, incluidos los fondos del mapa. Para salir por completo, usa el icono junto al reloj de Windows.":
       "Everything runs locally, including map backgrounds. To quit completely, use the Windows tray icon.",
+    "Mapa de Totkmap": "Totkmap map",
     "Mapa de HyruleSync": "HyruleSync map",
     "☰ Filtros": "☰ Filters",
     "Capa del mapa": "Map layer",
@@ -427,9 +431,12 @@ export const I18N = (() => {
     "Explorar archivos": "Browse files",
     "Cargar guardado": "Load save",
     "HYRULESYNC · PRIMER INICIO": "HYRULESYNC · FIRST RUN",
+    "TOTKMAP · PRIMER INICIO": "TOTKMAP · FIRST RUN",
     "Prepara tu mapa": "Prepare your map",
     "Descarga una vez los mapas, iconos y el catálogo de ubicaciones (unos 44 MB). Después podrás usarlos sin conexión.":
       "Download the maps, icons and location catalog once (about 44 MB). You can then use them offline.",
+    "Los recursos se obtienen del repositorio de TotK Unexplored. Totkmap es una aplicación independiente y conserva los créditos de esos recursos.":
+      "Resources are downloaded from the TotK Unexplored repository. Totkmap is a standalone app and preserves their credits.",
     "Los recursos se obtienen del repositorio de TotK Unexplored. HyruleSync es una aplicación independiente y conserva los créditos de esos recursos.":
       "Resources are downloaded from the TotK Unexplored repository. HyruleSync is a standalone app and preserves their credits.",
     "Descargar recursos del mapa": "Download map resources",
@@ -482,16 +489,20 @@ export const I18N = (() => {
       "{file} · {h} h {m} min · format {format}",
     "Mapa actualizado con el guardado": "Map updated from the save",
     "Ejecutable desconectado": "App disconnected",
+    "Abre Totkmap.exe para reanudar. Se conserva la última vista.":
+      "Open Totkmap.exe to reconnect. The last view is preserved.",
     "Abre HyruleSync.exe para reanudar. Se conserva la última vista.":
       "Open HyruleSync.exe to reconnect. The last view is preserved.",
     "No se puede cargar map_data.json.": "Unable to load map_data.json.",
     "Coordenadas copiadas": "Coordinates copied",
     "Preparando mapa…": "Preparing map…",
     "Reintentar descarga": "Retry download",
+    "No se pudo conectar con Totkmap. ": "Could not connect to Totkmap. ",
     "No se pudo conectar con HyruleSync. ": "Could not connect to HyruleSync. ",
     "No se pudo iniciar la descarga.": "Could not start the download.",
     "Acerca de, licencias y créditos": "About, licenses and credits",
     "Acerca de HyruleSync": "About HyruleSync",
+    "Acerca de Totkmap": "About Totkmap",
     Autoría: "Authorship",
     "Un proyecto fuertemente impulsado por IA.":
       "A project strongly driven by AI.",
@@ -540,6 +551,7 @@ export const I18N = (() => {
     "Actualización lista": "Update ready",
     "Descargando actualización ({percent}%)": "Downloading update ({percent}%)",
     "ACTUALIZACIÓN AUTOMÁTICA · HYRULESYNC": "AUTO-UPDATE · HYRULESYNC",
+    "ACTUALIZACIÓN AUTOMÁTICA · TOTKMAP": "AUTO-UPDATE · TOTKMAP",
     "Nueva actualización disponible · v{version}":
       "New update available · v{version}",
     "Versión actual: v{current} → Nueva versión: v{latest}":
@@ -564,6 +576,10 @@ export const I18N = (() => {
     "Volver a comprobar": "Check again",
     "No se pudieron buscar actualizaciones. Puedes reintentar.":
       "Could not check for updates. You can try again.",
+    "Extrae el ZIP y reemplaza los ejecutables con Totkmap cerrado. Conserva las carpetas .data y .state.":
+      "Extract the ZIP and replace the executables with Totkmap closed. Keep the .data and .state folders.",
+    "Extrae el ZIP y reemplaza solo Totkmap.exe con Totkmap cerrado. Conserva las carpetas .data y .state (mapas y preferencias).":
+      "Extract the ZIP and replace only Totkmap.exe with Totkmap closed. Keep the .data and .state folders (maps and settings).",
     "Extrae el ZIP y reemplaza los ejecutables con HyruleSync cerrado. Conserva las carpetas .data y .state.":
       "Extract the ZIP and replace the executables with HyruleSync closed. Keep the .data and .state folders.",
     "Extrae el ZIP y reemplaza solo HyruleSync.exe y HyruleSync.Stop.exe con HyruleSync cerrado. Conserva las carpetas .data y .state (mapas y preferencias).":

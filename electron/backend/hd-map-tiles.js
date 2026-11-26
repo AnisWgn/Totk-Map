@@ -277,7 +277,7 @@ export class HDMapTileCache {
     this.downloading++;
     try {
       const response = await fetch(remote, {
-        headers: { "User-Agent": `HyruleSync/${this.currentVersion}` },
+        headers: { "User-Agent": `Totkmap/${this.currentVersion}` },
         redirect: "error",
         signal: AbortSignal.timeout(8000),
       });

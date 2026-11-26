@@ -75,12 +75,29 @@ export function evaluateRelease(
   }
 
   const version = latest.join(".");
-  const setupExe = `HyruleSync-Setup-v${version}.exe`;
-  const portableExe = `HyruleSync-v${version}-portable.exe`;
+  const setupExe = `Totkmap-Setup-v${version}.exe`;
+  const portableExe = `Totkmap-v${version}-portable.exe`;
+  const zipPkg = `Totkmap-v${version}-windows.zip`;
+  const legacySetupExe = `HyruleSync-Setup-v${version}.exe`;
+  const legacyPortableExe = `HyruleSync-v${version}-portable.exe`;
   const legacyZip = `HyruleSync-v${version}-windows.zip`;
   const candidates = preferPortable
-    ? [portableExe, setupExe, legacyZip]
-    : [setupExe, portableExe, legacyZip];
+    ? [
+        portableExe,
+        setupExe,
+        zipPkg,
+        legacyPortableExe,
+        legacySetupExe,
+        legacyZip,
+      ]
+    : [
+        setupExe,
+        portableExe,
+        zipPkg,
+        legacySetupExe,
+        legacyPortableExe,
+        legacyZip,
+      ];
   const prefix = `https://github.com/${repository}/releases/download/${release.tag_name}/`;
   const assets = Array.isArray(release.assets) ? release.assets : [];
 
@@ -256,7 +273,7 @@ export class UpdateChecker {
         `https://api.github.com/repos/${this.repository}/releases/latest`,
         {
           headers: {
-            "User-Agent": `HyruleSync/${this.currentVersion}`,
+            "User-Agent": `Totkmap/${this.currentVersion}`,
             Accept: "application/vnd.github+json",
           },
           signal: AbortSignal.timeout(15000),
@@ -414,7 +431,7 @@ export class UpdateChecker {
       fs.mkdirSync(path.dirname(targetPath), { recursive: true });
       const response = await this.fetchImpl(this.info.downloadUrl, {
         headers: {
-          "User-Agent": `HyruleSync/${this.currentVersion}`,
+          "User-Agent": `Totkmap/${this.currentVersion}`,
         },
         signal,
       });
@@ -471,7 +488,7 @@ export class UpdateChecker {
 
       if (sha256Url) {
         const checksumResponse = await this.fetchImpl(sha256Url, {
-          headers: { "User-Agent": `HyruleSync/${this.currentVersion}` },
+          headers: { "User-Agent": `Totkmap/${this.currentVersion}` },
           signal,
         });
         if (!checksumResponse.ok) {

@@ -272,7 +272,7 @@ describe("Electron desktop shell (main.js & preload.cjs)", () => {
 
       // Tray menu restores window or exits cleanly
       const menu = mock.getLastMenuTemplate();
-      expect(menu[0].label).toBe("Open HyruleSync");
+      expect(menu[0].label).toBe("Open Totkmap");
       menu[0].click();
       expect(runtime.mainWindow.isVisible()).toBe(true);
 

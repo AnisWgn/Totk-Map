@@ -50,10 +50,10 @@ backend
   .then(({ url }) => {
     if (previewMode) {
       console.log(
-        `HyruleSync server listening on http://0.0.0.0:${backend.port}/`,
+        `Totkmap server listening on http://0.0.0.0:${backend.port}/`,
       );
     } else if (!args.includes("--quiet")) {
-      console.log(`HyruleSync server ready at ${url}`);
+      console.log(`Totkmap server ready at ${url}`);
     }
   })
   .catch((err) => {

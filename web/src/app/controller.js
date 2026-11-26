@@ -783,7 +783,7 @@ export function createAppController(store, config = {}) {
       $("statusTitle").textContent = t("Ejecutable desconectado");
       $("error").hidden = false;
       $("error").textContent = t(
-        "Abre HyruleSync.exe para reanudar. Se conserva la última vista.",
+        "Abre Totkmap.exe para reanudar. Se conserva la última vista.",
       );
     } finally {
       polling = false;
@@ -1083,7 +1083,7 @@ export function createAppController(store, config = {}) {
     } catch (e) {
       $("setup").hidden = false;
       $("setupError").textContent =
-        t("No se pudo conectar con HyruleSync. ") + e.message;
+        t("No se pudo conectar con Totkmap. ") + e.message;
     }
     setTimeout(boot, 1000);
   }

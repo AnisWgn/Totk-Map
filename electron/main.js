@@ -127,7 +127,7 @@ export async function startElectronApp(
     const t = (es, en) => backend.locale.t(es, en);
     return Menu.buildFromTemplate([
       {
-        label: t("Abrir HyruleSync", "Open HyruleSync"),
+        label: t("Abrir Totkmap", "Open Totkmap"),
         click: () => focusMainWindow(),
       },
       {
@@ -164,7 +164,7 @@ export async function startElectronApp(
         ? nativeImage.createFromPath(iconPath)
         : iconPath;
       tray = new Tray(image);
-      tray.setToolTip("HyruleSync");
+      tray.setToolTip("Totkmap");
       refreshTrayMenu();
       tray.on("double-click", () => focusMainWindow());
     } catch {
@@ -180,7 +180,7 @@ export async function startElectronApp(
       height: 900,
       minWidth: 960,
       minHeight: 640,
-      title: "HyruleSync",
+      title: "Totkmap",
       backgroundColor: "#0e141b",
       icon: fs.existsSync(iconPath) ? iconPath : undefined,
       autoHideMenuBar: true,

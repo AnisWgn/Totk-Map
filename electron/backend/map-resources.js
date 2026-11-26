@@ -108,7 +108,7 @@ export class MapResourcesManager {
   async #downloadSingle(item) {
     const url = `https://raw.githubusercontent.com/${this.manifest.repository}/${this.manifest.commit}/${item.source}`;
     const response = await fetch(url, {
-      headers: { "User-Agent": `HyruleSync/${this.currentVersion}` },
+      headers: { "User-Agent": `Totkmap/${this.currentVersion}` },
       signal: AbortSignal.timeout(30000),
     });
     if (!response.ok || !response.body) {
@@ -155,7 +155,7 @@ export class MapResourcesManager {
   async #downloadViaArchive(pendingItems) {
     const archiveUrl = `https://codeload.github.com/${this.manifest.repository}/tar.gz/${this.manifest.commit}`;
     const response = await fetch(archiveUrl, {
-      headers: { "User-Agent": `HyruleSync/${this.currentVersion}` },
+      headers: { "User-Agent": `Totkmap/${this.currentVersion}` },
       signal: AbortSignal.timeout(120000),
     });
     if (!response.ok || !response.body) {

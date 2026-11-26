@@ -186,7 +186,7 @@ export class SaveSyncEngine {
       throw new Error(
         this.locale.t(
           "El juego está escribiendo el guardado. Se reintentará.",
-          "The game is writing the save. HyruleSync will retry.",
+          "The game is writing the save. Totkmap will retry.",
         ),
       );
     }
