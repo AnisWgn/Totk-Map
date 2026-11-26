@@ -148,7 +148,24 @@ h1.brand em {
   padding: 25px;
 }
 
+.setup-drag-strip {
+  display: none;
+}
+
+html.is-electron .setup-drag-strip {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 58px;
+  z-index: 0;
+  -webkit-app-region: drag;
+}
+
 .setup-card {
+  position: relative;
+  z-index: 1;
   width: 440px;
   max-width: 100%;
   border: 1px solid #64786d;
@@ -156,6 +173,10 @@ h1.brand em {
   background: #14272dec;
   box-shadow: 0 20px 70px #0005;
   padding: 35px;
+}
+
+html.is-electron .setup-card {
+  -webkit-app-region: no-drag;
 }
 
 .setup-logo {

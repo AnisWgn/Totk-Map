@@ -20,7 +20,9 @@ export function Workspace({ store }) {
 
   return (
     <main>
-      <ViewTabs store={store} />
+      <div className="workspace-topbar">
+        <ViewTabs store={store} />
+      </div>
 
       <section id="previewBanner" hidden>
         <span id="previewLabel"></span>

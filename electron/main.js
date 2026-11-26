@@ -175,15 +175,32 @@ export async function startElectronApp(
 
   function createMainWindow(fragment = "") {
     const iconPath = resolveIconPath(false);
+    const titleBarOptions =
+      process.platform === "darwin"
+        ? { titleBarStyle: "hiddenInset" }
+        : {
+            titleBarStyle: "hidden",
+            titleBarOverlay: {
+              color: "rgba(0, 0, 0, 0)",
+              symbolColor: "#e5e7e4",
+              height: 58,
+            },
+          };
+
+    if (process.platform !== "darwin") {
+      Menu?.setApplicationMenu?.(null);
+    }
+
     mainWindow = new BrowserWindow({
       width: 1440,
       height: 900,
       minWidth: 960,
       minHeight: 640,
       title: "Totkmap",
-      backgroundColor: "#0e141b",
+      backgroundColor: "#0e1519",
       icon: fs.existsSync(iconPath) ? iconPath : undefined,
       autoHideMenuBar: true,
+      ...titleBarOptions,
       show: false,
       webPreferences: {
         preload: path.join(__dirname, "preload.cjs"),
@@ -192,6 +209,7 @@ export async function startElectronApp(
         sandbox: true,
       },
     });
+    mainWindow.setMenuBarVisibility?.(false);
 
     mainWindow.once("ready-to-show", () => {
       if (mainWindow && !mainWindow.isDestroyed()) {
