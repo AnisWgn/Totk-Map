@@ -281,7 +281,21 @@ export function createSaveController(context) {
 
     $("openFolder").onclick = $("welcomeFolder").onclick = chooseFolder;
 
-    $("browseFolder").onclick = () => browseFolders($("folderPath").value);
+    $("browseFolder").onclick = async () => {
+      if (globalThis.electronAPI?.selectFolder) {
+        const chosen = await globalThis.electronAPI.selectFolder(
+          $("folderPath").value,
+        );
+
+        if (!context.disposed && chosen) {
+          $("folderPath").value = chosen;
+          $("folderError").textContent = "";
+        }
+
+        return;
+      }
+      browseFolders($("folderPath").value);
+    };
 
     $("folderUp").onclick = () =>
       browseFolders($("folderUp").dataset.parent || "");

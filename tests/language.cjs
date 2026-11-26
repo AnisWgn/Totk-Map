@@ -4,13 +4,16 @@ const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_pro
 const root=path.resolve(__dirname,'..'),app=path.resolve(process.argv[2]||path.join(root,'outputs/HyruleSync'));
 fs.mkdirSync(path.join(root,'.local'),{recursive:true});
 const work=fs.mkdtempSync(path.join(root,'.local/language-test-')),pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-fs.copyFileSync(path.join(app,'HyruleSync.exe'),path.join(work,'HyruleSync.exe'));
+const exeSource=path.join(app,'HyruleSync.exe'),useNativeExe=fs.existsSync(exeSource);
+if(useNativeExe)fs.copyFileSync(exeSource,path.join(work,'HyruleSync.exe'));
 fs.mkdirSync(path.join(work,'.state'));
 fs.writeFileSync(path.join(work,'.state/settings.json'),JSON.stringify({runInBackground:true}));
 let child,url,exited;
 async function start(args=[]){
  const urlFile=path.join(work,'url.txt');fs.rmSync(urlFile,{force:true});
- child=cp.spawn(path.join(work,'HyruleSync.exe'),['--no-browser','--url-file',urlFile,...args],{windowsHide:true});
+ child=useNativeExe
+  ? cp.spawn(path.join(work,'HyruleSync.exe'),['--no-browser','--url-file',urlFile,...args],{windowsHide:true})
+  : cp.spawn(process.execPath,[path.join(root,'electron/server-cli.js'),'--quiet','--home',work,'--url-file',urlFile,...args]);
  exited=new Promise(resolve=>child.once('exit',resolve));
  for(let i=0;i<100&&!fs.existsSync(urlFile);i++)await pause(100);
  assert.ok(fs.existsSync(urlFile),'App starts');url=fs.readFileSync(urlFile,'utf8').replace('hyrulesync.localhost','127.0.0.1');

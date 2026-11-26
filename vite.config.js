@@ -50,7 +50,7 @@ export default defineConfig({
   },
   test: {
     root: ".",
-    include: ["tests/web/**/*.test.{js,jsx}"],
+    include: ["tests/web/**/*.test.{js,jsx}", "tests/electron/**/*.test.js"],
     environment: "jsdom",
     restoreMocks: true,
   },

@@ -3,10 +3,18 @@ import globals from "globals";
 import reactHooks from "eslint-plugin-react-hooks";
 
 export default [
-  { ignores: ["outputs/**", "node_modules/**", "web/public/**"] },
+  {
+    ignores: [
+      "outputs/**",
+      "node_modules/**",
+      "web/public/**",
+      "web-dist/**",
+      ".local/**",
+    ],
+  },
   js.configs.recommended,
   {
-    files: ["**/*.{js,jsx}"],
+    files: ["**/*.{js,jsx,cjs}"],
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
       parserOptions: { ecmaFeatures: { jsx: true } },
@@ -23,6 +31,12 @@ export default [
       "no-constant-binary-expression": "error",
       "no-empty": ["error", { allowEmptyCatch: true }],
       eqeqeq: ["error", "always", { null: "ignore" }],
+    },
+  },
+  {
+    files: ["**/*.cjs"],
+    languageOptions: {
+      sourceType: "commonjs",
     },
   },
   {
