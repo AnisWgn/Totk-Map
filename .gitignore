@@ -1,0 +1,17 @@
+# Local history, downloaded resources, saves and generated binaries
+.local/
+work/
+outputs/
+.data/
+.state/
+*.sav
+*.zip
+*.exe
+*.pdb
+__pycache__/
+.vs/
+.vscode/
+bin/
+obj/
+node_modules/
+
