@@ -11,6 +11,7 @@ export function createViewStore() {
     collectionGroup: "memories",
     armorPlan: { target: 4, selected: [] },
     armorPlanStatus: "",
+    updateState: null,
   };
   const listeners = new Set();
 

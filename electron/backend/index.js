@@ -99,16 +99,45 @@ function resolveDataJson(appRoot, webRoot, fileName) {
   throw new Error(`Missing data file: ${fileName}`);
 }
 
-function readPackageVersion(appRoot) {
+function readBuildIdentity(appRoot, webRoot) {
+  let version = "1.0.0";
+  let commitSha = "";
+  let repository = process.env.HYRULESYNC_REPO || undefined;
+
   try {
     const pkg = JSON.parse(
       fs.readFileSync(path.join(appRoot, "package.json"), "utf8"),
     );
     if (pkg.version && /^\d+\.\d+\.\d+$/.test(pkg.version)) {
-      return pkg.version;
+      version = pkg.version;
     }
   } catch {}
-  return "1.0.0";
+
+  for (const dir of [webRoot, appRoot]) {
+    if (!dir) continue;
+    const infoPath = path.join(dir, "build-info.json");
+    if (fs.existsSync(infoPath)) {
+      try {
+        const info = JSON.parse(fs.readFileSync(infoPath, "utf8"));
+        if (info.version && /^\d+\.\d+\.\d+$/.test(info.version)) {
+          version = info.version;
+        }
+        if (typeof info.commitSha === "string") {
+          commitSha = info.commitSha;
+        }
+        if (
+          !repository &&
+          typeof info.repository === "string" &&
+          info.repository
+        ) {
+          repository = info.repository;
+        }
+        break;
+      } catch {}
+    }
+  }
+
+  return { version, commitSha, repository };
 }
 
 function listenOnPort(server, host, port) {
@@ -138,11 +167,14 @@ export function createBackend({
   enablePageLifetimeExit = false,
   onShouldExit,
   onSettingsChanged,
+  onApplyUpdate = null,
+  updateFetchImpl,
 }) {
   const resolvedAppRoot = path.resolve(appRoot);
   const resolvedHome = path.resolve(homeDir);
   const webRoot = resolveWebRoot(resolvedAppRoot, explicitWebRoot);
-  const currentVersion = readPackageVersion(resolvedAppRoot);
+  const buildIdentity = readBuildIdentity(resolvedAppRoot, webRoot);
+  const currentVersion = buildIdentity.version;
   const stateDir = path.join(resolvedHome, ".state");
   const dataRoot = path.join(resolvedHome, ".data");
   const settingsPath = path.join(stateDir, "settings.json");
@@ -250,7 +282,20 @@ export function createBackend({
     currentVersion,
   });
   const hdMapTiles = new HDMapTileCache({ dataRoot, currentVersion });
-  const updates = new UpdateChecker({ currentVersion, locale });
+  const updates = new UpdateChecker({
+    currentVersion,
+    currentCommit: buildIdentity.commitSha,
+    repository: buildIdentity.repository,
+    locale,
+    updatesDir: path.join(stateDir, "updates"),
+    preferPortable: Boolean(
+      process.env.PORTABLE_EXECUTABLE_FILE ||
+      process.env.PORTABLE_EXECUTABLE_DIR,
+    ),
+    canAutoInstall: Boolean(onApplyUpdate),
+    onApplyUpdate,
+    fetchImpl: updateFetchImpl,
+  });
   const pages = new PageLifetime();
 
   const saveSync = new SaveSyncEngine({
@@ -444,6 +489,18 @@ export function createBackend({
     [
       "api/check-updates",
       { requiresMap: false, handle: () => updates.check(true) },
+    ],
+    [
+      "api/download-update",
+      { requiresMap: false, handle: () => updates.startDownload() },
+    ],
+    [
+      "api/cancel-update",
+      { requiresMap: false, handle: () => updates.cancelDownload() },
+    ],
+    [
+      "api/apply-update",
+      { requiresMap: false, handle: () => updates.applyUpdate() },
     ],
     [
       "api/follow-on",

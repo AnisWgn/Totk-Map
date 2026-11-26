@@ -1,15 +1,20 @@
-name: Build Electron Windows
+name: Build & Publish Electron Windows
 on:
   push:
   pull_request:
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
+concurrency:
+  group: electron-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/Main' && github.ref != 'refs/heads/main' }}
 jobs:
   electron-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -20,14 +25,57 @@ jobs:
         run: |
           npm run lint
           npm test
+      - name: Set automatic build version for Main branch releases
+        id: build_version
+        shell: pwsh
+        run: |
+          $pkg = Get-Content -LiteralPath package.json -Raw | ConvertFrom-Json
+          $parts = $pkg.version.Split('.')
+          $version = "$($parts[0]).$($parts[1]).${{ github.run_number }}"
+          npm version $version --no-git-tag-version --allow-same-version | Out-Null
+          "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "tag=v$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
       - name: Build Windows Electron executables (.exe portable & installer)
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          HYRULESYNC_REPO: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
         run: npm run electron:build
+      - name: Generate SHA-256 checksums for update verification
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "outputs/electron" -Filter "*.exe" -File | ForEach-Object {
+            $hash = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            Set-Content -LiteralPath ($_.FullName + ".sha256") -Value "$hash  $($_.Name)" -Encoding ascii
+          }
       - name: Upload Electron Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: HyruleSync-Electron-Windows
           path: |
             outputs/electron/*.exe
+            outputs/electron/*.exe.sha256
           if-no-files-found: error
+      - name: Publish automatic GitHub Release on push to Main
+        if: github.event_name == 'push' && (github.ref_name == 'Main' || github.ref_name == 'main')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.build_version.outputs.tag }}
+          RELEASE_VERSION: ${{ steps.build_version.outputs.version }}
+        run: |
+          $assets = Get-ChildItem -Path "outputs/electron" -File | Where-Object {
+            $_.Name -like "*-v$env:RELEASE_VERSION*.exe" -or $_.Name -like "*-v$env:RELEASE_VERSION*.exe.sha256"
+          } | ForEach-Object { $_.FullName }
+          if (-not $assets -or $assets.Count -eq 0) {
+            throw "No release executables found for version $env:RELEASE_VERSION."
+          }
+          gh release view $env:RELEASE_TAG 2>$null | Out-Null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $env:RELEASE_TAG @assets --clobber
+          } else {
+            gh release create $env:RELEASE_TAG @assets --target "${{ github.sha }}" --title "HyruleSync $env:RELEASE_TAG" --generate-notes --latest
+          }
+          if ($LASTEXITCODE -ne 0) {
+            throw "Failed to publish GitHub Release $env:RELEASE_TAG."
+          }

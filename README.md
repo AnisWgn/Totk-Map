@@ -49,6 +49,7 @@ Deux fichiers sont générés dans `outputs/electron/` :
 - **Fenêtre desktop native (`BrowserWindow`)** avec thème sombre natif, verrouillage d'instance unique et ouverture sécurisée des guides externes (*Zelda Dungeon*, *GitHub*) dans le navigateur système.
 - **Sélecteur de dossier natif Windows** via IPC sécurisé (`preload.cjs` / `contextIsolation`) pour choisir rapidement le dossier de sauvegardes TOTK.
 - **Icône dans la zone de notification (System Tray)** permettant d'ouvrir la fenêtre, choisir un dossier de sauvegardes, mettre en pause/reprendre l'Autosync ou garder l'application active en arrière-plan à la fermeture.
+- **Système d'auto-update intégré avec barre de progression** : dès qu'une modification est poussée ou fusionnée sur `Main`, GitHub Actions compile automatiquement une nouvelle release Windows (`v1.0.<build>`) avec empreinte `SHA-256`. Les clients ouverts affichent automatiquement un onglet **« New update available / Nueva actualización disponible »** avec bouton de téléchargement, **barre de progression en temps réel** (`%`, `Mo / Mo`, vitesse) et installation en un clic (**Install & Restart**).
 - **Lecture 100 % en lecture seule** des fichiers `progress.sav` (aucune sauvegarde n'est jamais modifiée).
 
 ---

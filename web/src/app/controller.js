@@ -46,6 +46,7 @@ export function createAppController(store, config = {}) {
     quests: {},
     world: {},
     summary: {},
+    updateState: null,
   });
   store.update({
     armorPlan: normalizeArmorPlan(config.armorPlan),
@@ -1150,6 +1151,8 @@ export function createAppController(store, config = {}) {
     $("checkUpdates").onclick = () => checkUpdates(true);
 
     checkUpdates();
+    if ($("openUpdateTab"))
+      $("openUpdateTab").onclick = () => store.actions.setSaveView("update");
     $("viewChanges").onclick = showChanges;
     $("aboutChanges").onclick = showChanges;
     $("runInBackground").onchange = changeBackgroundMode;
@@ -1365,12 +1368,20 @@ export function createAppController(store, config = {}) {
     onPreview: showPreview,
   });
 
-  const { checkUpdates, showChanges } = createUpdateController({
+  const {
+    checkUpdates,
+    showChanges,
+    startUpdateDownload,
+    cancelUpdateDownload,
+    applyUpdate,
+  } = createUpdateController({
     $,
     t,
     fetch,
     setTimeout,
     clearTimeout,
+    publish,
+    toast,
   });
   const {
     initQuests,
@@ -1428,6 +1439,10 @@ export function createAppController(store, config = {}) {
   Object.assign(store.actions, {
     loadCollections,
     saveArmorPlan,
+    checkUpdates,
+    startUpdateDownload,
+    cancelUpdateDownload,
+    applyUpdate,
     showCollectionBossOnMap: (id) => {
       const point = catalog?.points.find((point) => point.id === id);
 
