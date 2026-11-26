@@ -6,8 +6,10 @@ import path from "node:path";
 import { Catalog } from "./catalog.js";
 import { HDMapTileCache } from "./hd-map-tiles.js";
 import { LocaleManager } from "./locale.js";
+import { MAP_PIN_COLORS, writeMapPinToSaveFile } from "./map-markers.js";
 import { MapResourcesManager } from "./map-resources.js";
 import { PageLifetime } from "./page-lifetime.js";
+import { RecompLiveBridge } from "./recomp-live.js";
 import { browseDirectories, getSourceOptions } from "./save-sources.js";
 import {
   SaveSyncEngine,
@@ -169,6 +171,7 @@ export function createBackend({
   onSettingsChanged,
   onApplyUpdate = null,
   updateFetchImpl,
+  recompLiveOptions = {},
 }) {
   const resolvedAppRoot = path.resolve(appRoot);
   const resolvedHome = path.resolve(homeDir);
@@ -297,6 +300,11 @@ export function createBackend({
     fetchImpl: updateFetchImpl,
   });
   const pages = new PageLifetime();
+  const recompLive = new RecompLiveBridge({
+    enabled: Boolean(settings.recompLive),
+    locale,
+    ...recompLiveOptions,
+  });
 
   const saveSync = new SaveSyncEngine({
     locale,
@@ -454,6 +462,101 @@ export function createBackend({
         ),
       );
     }
+  }
+
+  async function handleSetPin(rawText) {
+    let payload;
+    try {
+      payload = JSON.parse(rawText);
+    } catch {
+      throw new Error(
+        locale.t("Datos de baliza inválidos.", "Invalid pin payload."),
+      );
+    }
+    const color = String(payload?.color || "");
+    if (!MAP_PIN_COLORS.includes(color)) {
+      throw new Error(
+        locale.t("Color de baliza inválido.", "Invalid pin color."),
+      );
+    }
+
+    const activePins =
+      recompLive.pins ?? saveSync.lastValid?.mapMarkers?.pins ?? [];
+    let slot = payload?.slot;
+    if (slot === "auto" || slot === undefined || slot === null) {
+      const sameColor = activePins.find((p) => p.color === color);
+      if (sameColor) {
+        slot = sameColor.slot;
+      } else {
+        const used = new Set(activePins.map((p) => p.slot));
+        slot = [0, 1, 2, 3, 4, 5].find((s) => !used.has(s)) ?? 0;
+      }
+    }
+    slot = Number(slot);
+    if (!Number.isInteger(slot) || slot < 0 || slot > 5) {
+      throw new Error(
+        locale.t(
+          "La ranura de baliza debe estar entre 1 y 6.",
+          "Pin slot must be between 1 and 6.",
+        ),
+      );
+    }
+
+    const position = {
+      x: Number(payload?.position?.x ?? 0),
+      y: Number(payload?.position?.y ?? 120),
+      z: Number(payload?.position?.z ?? 0),
+    };
+    const target = payload?.target || "auto";
+
+    if (
+      target !== "save" &&
+      (recompLive.status === "bridge" ||
+        (recompLive.status === "connected" && recompLive.canWriteMemory))
+    ) {
+      const memRes = await recompLive.writePinInMemory({
+        slot,
+        color,
+        position,
+      });
+      if (memRes.ok) {
+        return {
+          ok: true,
+          appliedTo: recompLive.status === "bridge" ? "bridge" : "memory",
+          slot,
+          color,
+          live: recompLive.state(),
+        };
+      }
+      if (target === "memory") {
+        throw new Error(memRes.error || "Memory write failed.");
+      }
+    }
+
+    const saveFile = saveSync.lastValid?.file;
+    if (saveFile && fs.existsSync(saveFile)) {
+      writeMapPinToSaveFile(
+        saveFile,
+        path.join(stateDir, "backups"),
+        { slot, color, position },
+        locale,
+      );
+      saveSync.refreshSaves();
+      return {
+        ok: true,
+        appliedTo: "save",
+        slot,
+        color,
+        live: recompLive.state(),
+      };
+    }
+
+    throw new Error(
+      locale.t(
+        "Conecta TotK Recomp en directo o carga un archivo progress.sav en disco para colocar una baliza.",
+        "Connect TotK Recomp live or load a progress.sav file on disk to place a pin.",
+      ),
+    );
   }
 
   const postRoutes = new Map([
@@ -649,6 +752,49 @@ export function createBackend({
     [
       "api/auto-off",
       { requiresMap: true, handle: () => saveSync.setAuto(false) },
+    ],
+    [
+      "api/live-on",
+      {
+        requiresMap: false,
+        handle: () => {
+          settings.recompLive = true;
+          saveSettings();
+          return recompLive.setEnabled(true);
+        },
+      },
+    ],
+    [
+      "api/live-off",
+      {
+        requiresMap: false,
+        handle: () => {
+          settings.recompLive = false;
+          saveSettings();
+          return recompLive.setEnabled(false);
+        },
+      },
+    ],
+    [
+      "api/live-rescan",
+      { requiresMap: false, handle: () => recompLive.rescan() },
+    ],
+    [
+      "api/live-telemetry",
+      {
+        requiresMap: false,
+        handle: (body) =>
+          recompLive.ingestExternalTelemetry(
+            JSON.parse(body.toString("utf8").trim()),
+          ),
+      },
+    ],
+    [
+      "api/set-pin",
+      {
+        requiresMap: false,
+        handle: (body) => handleSetPin(body.toString("utf8").trim()),
+      },
     ],
   ]);
 
@@ -933,6 +1079,9 @@ export function createBackend({
             updates.check(false);
             jsonResponse(res, updates.state());
             return;
+          case "api/live":
+            jsonResponse(res, recompLive.state());
+            return;
           case "api/setup":
             jsonResponse(res, mapResources.state());
             return;
@@ -1056,6 +1205,7 @@ export function createBackend({
     }
 
     saveSync.scan();
+    recompLive.start();
     scanTimer = setInterval(() => saveSync.scan(), 500);
 
     if (enablePageLifetimeExit) {
@@ -1079,6 +1229,7 @@ export function createBackend({
 
   async function stop() {
     running = false;
+    recompLive.stop();
     if (scanTimer) {
       clearInterval(scanTimer);
       scanTimer = null;
@@ -1109,6 +1260,7 @@ export function createBackend({
     mapResources,
     hdMapTiles,
     updates,
+    recompLive,
     pages,
     saveSync,
     get url() {

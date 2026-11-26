@@ -568,6 +568,52 @@ export const I18N = (() => {
       "Extract the ZIP and replace the executables with HyruleSync closed. Keep the .data and .state folders.",
     "Extrae el ZIP y reemplaza solo HyruleSync.exe y HyruleSync.Stop.exe con HyruleSync cerrado. Conserva las carpetas .data y .state (mapas y preferencias).":
       "Extract the ZIP and replace only HyruleSync.exe and HyruleSync.Stop.exe with HyruleSync closed. Keep the .data and .state folders (maps and settings).",
+    "TotK Recomp · Tiempo real": "TotK Recomp · Real-time",
+    "Sincronización en vivo (sin esperar autoguardado)":
+      "Live sync (no autosave wait)",
+    Reescanear: "Rescan",
+    "Mostrar balizas y sellos del juego": "Show in-game pins and stamps",
+    "Haz clic derecho en el mapa para colocar una baliza luminosa.":
+      "Right-click anywhere on the map to place a glowing pin.",
+    "● Conectado en vivo a {process}": "● Connected live to {process}",
+    "◌ Buscando totk.exe en ejecución…": "◌ Searching for running totk.exe…",
+    "Sincronización en vivo desactivada.": "Live sync disabled.",
+    "Recomp Live · {process}": "Recomp Live · {process}",
+    "Recomp Live · buscando totk.exe…": "Recomp Live · searching totk.exe…",
+    "Posición en vivo de Link (TotK Recomp)":
+      "Link's live position (TotK Recomp)",
+    "Posición en vivo: {coords} · {process}":
+      "Live position: {coords} · {process}",
+    "Colocar baliza en el juego": "Place pin in game",
+    "BALIZA EN EL JUEGO": "IN-GAME PIN",
+    "Elige un color de baliza": "Choose a pin color",
+    "Cerrar selector de baliza": "Close pin picker",
+    Roja: "Red",
+    Azul: "Blue",
+    Amarilla: "Yellow",
+    Verde: "Green",
+    Morada: "Purple",
+    Celeste: "Light blue",
+    "Quitar baliza": "Remove pin",
+    "Baliza {color} #{slot}": "{color} pin #{slot}",
+    "Sello: {type} #{slot}": "Stamp: {type} #{slot}",
+    "Teletransportador #{slot}": "Travel Medallion #{slot}",
+    "Baliza {color} enviada a TotK Recomp en vivo.":
+      "{color} pin sent to TotK Recomp live.",
+    "Baliza {color} guardada en progress.sav (con copia de seguridad).":
+      "{color} pin written to progress.sav (backup created).",
+    "Baliza eliminada en TotK Recomp.": "Pin removed in TotK Recomp.",
+    "Baliza eliminada en progress.sav.": "Pin removed in progress.sav.",
+    Espada: "Sword",
+    Olla: "Pot",
+    Persona: "Person",
+    Rombo: "Diamond",
+    Corazón: "Heart",
+    Estrella: "Star",
+    "Cofre del tesoro": "Treasure chest",
+    Calavera: "Skull",
+    "Hoja kolog": "Korok leaf",
+    Mineral: "Ore",
   };
 
   function t(source, values = {}) {

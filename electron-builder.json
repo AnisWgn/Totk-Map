@@ -19,7 +19,8 @@
   "asarUnpack": [
     "assets/hyrulesync.ico",
     "assets/HyruleSync-icon.png",
-    "assets/HyruleSync-icon-32.png"
+    "assets/HyruleSync-icon-32.png",
+    "electron/recomp-memory-helper.ps1"
   ],
   "win": {
     "icon": "assets/hyrulesync.ico",

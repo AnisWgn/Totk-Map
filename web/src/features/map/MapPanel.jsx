@@ -20,6 +20,12 @@ export function MapPanel({ hidden }) {
           </button>
           <button data-layer="sky">{t("Cielo")}</button>
         </div>
+        <button
+          type="button"
+          id="recompLiveBadge"
+          className="recomp-live-badge"
+          hidden
+        ></button>
         <span id="visibleCount">{t("—")}</span>
       </div>
 
@@ -97,6 +103,9 @@ export function MapPanel({ hidden }) {
         <button id="zoomSelected" className="secondary">
           {t("Centrar y acercar")}
         </button>
+        <button type="button" id="pinSelectedPoint" className="secondary">
+          {t("Colocar baliza en el juego")}
+        </button>
         <a
           id="viewGuide"
           className="guide-button"
@@ -112,6 +121,90 @@ export function MapPanel({ hidden }) {
           <summary>{t("Verificar contra el guardado")}</summary>
           <div id="diagnostics"></div>
         </details>
+      </section>
+
+      <section
+        id="pinPopover"
+        className="pin-popover"
+        role="dialog"
+        aria-labelledby="pinPopoverTitle"
+        hidden
+      >
+        <button
+          type="button"
+          id="closePinPopover"
+          className="pin-popover-close"
+          aria-label={t("Cerrar selector de baliza")}
+        >
+          {t("×")}
+        </button>
+        <div className="eyebrow">{t("BALIZA EN EL JUEGO")}</div>
+        <h3 id="pinPopoverTitle">{t("Elige un color de baliza")}</h3>
+        <p id="pinPopoverCoords" className="pin-popover-coords"></p>
+        <div className="pin-color-grid">
+          <button
+            type="button"
+            data-pin-color="Red"
+            className="pin-color-btn"
+            style={{ "--pin-swatch": "#ff5a52" }}
+          >
+            <i></i>
+            <span>{t("Roja")}</span>
+          </button>
+          <button
+            type="button"
+            data-pin-color="Blue"
+            className="pin-color-btn"
+            style={{ "--pin-swatch": "#4ea6ff" }}
+          >
+            <i></i>
+            <span>{t("Azul")}</span>
+          </button>
+          <button
+            type="button"
+            data-pin-color="Yellow"
+            className="pin-color-btn"
+            style={{ "--pin-swatch": "#ffd24c" }}
+          >
+            <i></i>
+            <span>{t("Amarilla")}</span>
+          </button>
+          <button
+            type="button"
+            data-pin-color="Green"
+            className="pin-color-btn"
+            style={{ "--pin-swatch": "#4ce08a" }}
+          >
+            <i></i>
+            <span>{t("Verde")}</span>
+          </button>
+          <button
+            type="button"
+            data-pin-color="Purple"
+            className="pin-color-btn"
+            style={{ "--pin-swatch": "#b87aff" }}
+          >
+            <i></i>
+            <span>{t("Morada")}</span>
+          </button>
+          <button
+            type="button"
+            data-pin-color="LightBlue"
+            className="pin-color-btn"
+            style={{ "--pin-swatch": "#5ce6e6" }}
+          >
+            <i></i>
+            <span>{t("Celeste")}</span>
+          </button>
+        </div>
+        <button
+          type="button"
+          id="removeGamePin"
+          className="secondary pin-remove-btn"
+          hidden
+        >
+          {t("Quitar baliza")}
+        </button>
       </section>
 
       <div className="attribution">

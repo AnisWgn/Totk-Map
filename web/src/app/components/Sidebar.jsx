@@ -129,6 +129,28 @@ export function Sidebar() {
       </section>
 
       <section
+        className="source recomp-live-section"
+        aria-labelledby="recompLiveTitle"
+      >
+        <h2 id="recompLiveTitle">{t("TotK Recomp · Tiempo real")}</h2>
+        <label className="switch">
+          <input type="checkbox" id="recompLiveToggle" />
+          <span>{t("Sincronización en vivo (sin esperar autoguardado)")}</span>
+          <button type="button" id="recompRescan" className="link-button">
+            {t("Reescanear")}
+          </button>
+        </label>
+        <p id="recompLiveInfo" role="status"></p>
+        <label className="switch">
+          <input type="checkbox" id="showGamePins" defaultChecked />
+          <span>{t("Mostrar balizas y sellos del juego")}</span>
+        </label>
+        <p className="fine">
+          {t("Haz clic derecho en el mapa para colocar una baliza luminosa.")}
+        </p>
+      </section>
+
+      <section
         id="updateNotice"
         className="source update-notice"
         role="status"

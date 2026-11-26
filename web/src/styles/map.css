@@ -540,3 +540,163 @@ main {
     font-size: 6px;
   }
 }
+
+.recomp-live-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: #17272be8;
+  border: 1px solid #78857a88;
+  color: #e6d9a0;
+  cursor: pointer;
+}
+
+.recomp-live-badge[data-state="connected"] {
+  background: linear-gradient(135deg, #1b3f36ee 0%, #152b2dee 100%);
+  border-color: #5de4b3bb;
+  color: #dcfff0;
+  box-shadow: 0 0 12px #5de4b344;
+}
+
+.recomp-live-badge[hidden] {
+  display: none;
+}
+
+.recomp-live-section #recompLiveInfo.live {
+  color: #6ce8b7;
+  font-weight: 600;
+}
+
+.game-pin-marker > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin: 0 auto;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: var(--pin-color, #ff5a52);
+  border: 2px solid #ffffffdd;
+  box-shadow:
+    0 2px 8px #000c,
+    0 0 12px var(--pin-color, #ff5a52);
+}
+
+.game-pin-marker > span > i {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 800;
+  color: #0e171b;
+  transform: rotate(45deg);
+}
+
+.game-stamp-marker > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #142228ee;
+  border: 1.5px solid #e6d9a0cc;
+  color: #f4e8be;
+  font-size: 12px;
+  box-shadow: 0 2px 6px #000a;
+}
+
+.game-warp-marker > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #142b38ee;
+  border: 2px solid #65d9ff;
+  color: #9ce8ff;
+  font-size: 13px;
+  box-shadow: 0 0 10px #65d9ff88;
+}
+
+.pin-popover {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  max-width: calc(100% - 36px);
+  z-index: 650;
+  background: #15242af8;
+  border: 1px solid #8a9b8f99;
+  border-radius: 10px;
+  padding: 20px 22px;
+  box-shadow: 0 14px 48px #000b;
+}
+
+.pin-popover[hidden] {
+  display: none;
+}
+
+.pin-popover h3 {
+  margin: 4px 0 6px;
+  font-size: 16px;
+  color: var(--gold);
+}
+
+.pin-popover-coords {
+  margin: 0 0 14px;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.pin-popover-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.pin-color-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.pin-color-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-size: 12.5px;
+  background: #1b2e35;
+  border: 1px solid #5d6f69;
+  color: #f0edd8;
+}
+
+.pin-color-btn:hover {
+  border-color: var(--pin-swatch);
+  background: #223840;
+}
+
+.pin-color-btn > i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--pin-swatch);
+  box-shadow: 0 0 8px var(--pin-swatch);
+  flex-shrink: 0;
+}
+
+.pin-remove-btn {
+  width: 100%;
+  margin-top: 10px;
+}

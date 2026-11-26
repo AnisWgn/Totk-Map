@@ -19,6 +19,7 @@ import { fmt, esc } from "../shared/utils.js";
 import { createControllerScope } from "./controller-scope.js";
 import { createSaveController } from "../features/saves/controller.js";
 import { createMapBackground } from "../features/map/background.js";
+import { createLivePinController } from "../features/map/live-pins.js";
 import { normalizeArmorPlan } from "../features/inventory/collections.js";
 
 export function createAppController(store, config = {}) {
@@ -288,7 +289,9 @@ export function createAppController(store, config = {}) {
   }
 
   function centerLink({ zoom = true } = {}) {
-    const p = mapPosition(snapshot);
+    const pose = !previewSnapshot ? livePins.getEffectiveLinkPose() : null;
+    const p =
+      pose?.isLive && pose.position ? pose.position : mapPosition(snapshot);
 
     if (!showLink || !p || !map) return;
     if (layer !== playerLayer(p)) switchLayer(playerLayer(p));
@@ -303,15 +306,22 @@ export function createAppController(store, config = {}) {
       linkMarker = null;
     }
 
-    const p = mapPosition(snapshot),
-      shrine = snapshot?.playerContext?.kind === "shrine";
+    const pose = !previewSnapshot ? livePins.getEffectiveLinkPose() : null;
+    const isLive = Boolean(pose?.isLive && pose.position);
+    const p = isLive ? pose.position : mapPosition(snapshot),
+      shrine = !isLive && snapshot?.playerContext?.kind === "shrine";
     $("centerLink").disabled = !showLink || !p;
-    $("linkPosition").textContent = p
-      ? t("Última posición de Link: {coords} · guardado {time}", {
-          coords: locationText(snapshot),
-          time: new Date(snapshot.savedAt).toLocaleString(I18N.language),
+    $("linkPosition").textContent = isLive
+      ? t("Posición en vivo: {coords} · {process}", {
+          coords: coordinateString(p),
+          process: pose.processName,
         })
-      : t("La posición de Link no está disponible en este guardado.");
+      : p
+        ? t("Última posición de Link: {coords} · guardado {time}", {
+            coords: locationText(snapshot),
+            time: new Date(snapshot.savedAt).toLocaleString(I18N.language),
+          })
+        : t("La posición de Link no está disponible en este guardado.");
     $("linkDiagnostics").textContent = snapshot
       ? t("Mapa guardado: {map} · coordenadas originales: {coords}", {
           map: snapshot.playerContext?.mapId || t("Sin verificar"),
@@ -322,19 +332,29 @@ export function createAppController(store, config = {}) {
       : "";
     if (!showLink || !p || playerLayer(p) !== layer) return;
 
+    const rotDeg =
+      pose?.yaw !== null && Number.isFinite(pose?.yaw)
+        ? Math.round((pose.yaw * 180) / Math.PI)
+        : null;
+    const arrowHtml =
+      rotDeg !== null
+        ? `<span style="display:inline-block;transform:rotate(${rotDeg}deg)">&#9650;</span>`
+        : "&#9650;";
     const icon = L.divIcon({
       className: "link-marker" + (shrine ? " in-shrine" : ""),
       html:
-        "&#9650;" +
+        arrowHtml +
         (shrine
           ? '<span class="shrine-badge" aria-hidden="true">⌂</span>'
           : ""),
       iconSize: [28, 28],
       iconAnchor: [14, 14],
     });
-    const title = shrine
-      ? locationText(snapshot)
-      : t("Última posición conocida de Link");
+    const title = isLive
+      ? t("Posición en vivo de Link (TotK Recomp)")
+      : shrine
+        ? locationText(snapshot)
+        : t("Última posición conocida de Link");
     linkMarker = L.marker(ll(p), {
       icon,
       title,
@@ -352,6 +372,7 @@ export function createAppController(store, config = {}) {
   function render() {
     if (scope.disposed || !map || !catalog) return;
     renderLink();
+    livePins.renderGameMarkers();
     renderQuestMarkers();
     points = filterPoints(catalog.points, {
       layer,
@@ -824,6 +845,17 @@ export function createAppController(store, config = {}) {
 
     routes = L.layerGroup().addTo(map);
     objects = L.layerGroup().addTo(map);
+    livePins.initMapLayers(map);
+    if ($("pinSelectedPoint")) {
+      $("pinSelectedPoint").onclick = () => {
+        if (selected?.position) {
+          livePins.openPinPopover({
+            position: selected.position,
+            slot: "auto",
+          });
+        }
+      };
+    }
     switchLayer(
       ["surface", "sky", "depths"].includes(prefs.layer)
         ? prefs.layer
@@ -1141,6 +1173,7 @@ export function createAppController(store, config = {}) {
     });
     initInventory();
     initQuests();
+    livePins.bindControls();
     const openAbout = () => {
       $("aboutDialog").showModal();
       checkUpdates();
@@ -1343,6 +1376,29 @@ export function createAppController(store, config = {}) {
       toast,
     });
 
+  const livePins = createLivePinController({
+    $,
+    t,
+    fetch,
+    request,
+    toast,
+    setTimeout,
+    clearTimeout,
+    getMap: () => map,
+    getLayer: () => layer,
+    getSnapshot: () => snapshot,
+    getFollowLink: () => followLink,
+    getShowLink: () => showLink,
+    onLivePositionChanged: ({ moved }) => {
+      if (scope.disposed || !map) return;
+      renderLink();
+      if (moved && !previewSnapshot && showLink && followLink) {
+        centerLink({ zoom: false });
+      }
+    },
+    onSaveModified: () => poll(),
+  });
+
   const { initSaves, chooseFolder } = createSaveController({
     get source() {
       return source;
@@ -1499,6 +1555,7 @@ export function createAppController(store, config = {}) {
     if (!scope.disposed) toast(error.message);
   });
   scope.onDispose(() => {
+    livePins.dispose();
     if (renderFrame !== null) cancelAnimationFrame(renderFrame);
     map?.remove();
   });
