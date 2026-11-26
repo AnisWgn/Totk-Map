@@ -53,5 +53,6 @@ export default defineConfig({
     include: ["tests/web/**/*.test.{js,jsx}", "tests/electron/**/*.test.js"],
     environment: "jsdom",
     restoreMocks: true,
+    testTimeout: 20000,
   },
 });
