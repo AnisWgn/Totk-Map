@@ -1,3 +1,4 @@
+import cp from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -54,6 +55,9 @@ export async function startElectronApp(
     appRoot = DEFAULT_APP_ROOT,
     argv = process.argv.slice(1),
     createViteServer = null,
+    spawnProcess = cp.spawn,
+    platform = process.platform,
+    updateFetchImpl,
   } = {},
 ) {
   const {
@@ -313,6 +317,66 @@ export async function startElectronApp(
   const systemCulture =
     typeof app.getLocale === "function" ? app.getLocale() : undefined;
 
+  async function applyDownloadedUpdate({ filePath, assetName }) {
+    if (
+      platform === "win32" &&
+      String(filePath).toLowerCase().endsWith(".exe")
+    ) {
+      const portableTarget = process.env.PORTABLE_EXECUTABLE_FILE;
+      if (portableTarget && String(assetName).includes("-portable.exe")) {
+        const scriptPath = path.join(
+          path.dirname(filePath),
+          "apply-portable-update.ps1",
+        );
+        const script = [
+          "param([int]$TargetPid, [string]$SourceExe, [string]$DestExe)",
+          "for ($i = 0; $i -lt 120; $i++) {",
+          "  if (-not (Get-Process -Id $TargetPid -ErrorAction SilentlyContinue)) { break }",
+          "  Start-Sleep -Milliseconds 500",
+          "}",
+          "Start-Sleep -Milliseconds 400",
+          "Copy-Item -LiteralPath $SourceExe -Destination $DestExe -Force",
+          "Start-Process -FilePath $DestExe",
+        ].join("\r\n");
+        fs.writeFileSync(scriptPath, script, "utf8");
+        const child = spawnProcess(
+          "powershell.exe",
+          [
+            "-NoProfile",
+            "-WindowStyle",
+            "Hidden",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            scriptPath,
+            String(process.pid),
+            filePath,
+            portableTarget,
+          ],
+          { detached: true, stdio: "ignore", windowsHide: true },
+        );
+        child?.unref?.();
+      } else {
+        const child = spawnProcess(filePath, [], {
+          detached: true,
+          stdio: "ignore",
+          windowsHide: false,
+        });
+        child?.unref?.();
+      }
+
+      isQuitting = true;
+      setTimeout(() => app.quit(), 120);
+      return;
+    }
+
+    if (typeof shell.showItemInFolder === "function") {
+      shell.showItemInFolder(filePath);
+    } else if (typeof shell.openExternal === "function") {
+      await shell.openExternal(`file://${filePath}`);
+    }
+  }
+
   backend = createBackend({
     appRoot,
     homeDir,
@@ -321,6 +385,8 @@ export async function startElectronApp(
     preferredPort: DEFAULT_LOOPBACK_PORT,
     enablePageLifetimeExit: false,
     onSettingsChanged: () => refreshTrayMenu(),
+    onApplyUpdate: applyDownloadedUpdate,
+    updateFetchImpl,
   });
 
   const started = await backend.start();

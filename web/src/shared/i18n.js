@@ -536,6 +536,32 @@ export const I18N = (() => {
     "Todavía no hay versiones publicadas.":
       "No releases have been published yet.",
     "Nueva versión disponible: v{version}": "New version available: v{version}",
+    "Nueva actualización disponible": "New update available",
+    "Actualización lista": "Update ready",
+    "Descargando actualización ({percent}%)": "Downloading update ({percent}%)",
+    "ACTUALIZACIÓN AUTOMÁTICA · HYRULESYNC": "AUTO-UPDATE · HYRULESYNC",
+    "Nueva actualización disponible · v{version}":
+      "New update available · v{version}",
+    "Versión actual: v{current} → Nueva versión: v{latest}":
+      "Current version: v{current} → New version: v{latest}",
+    "Tamaño del paquete: {size}": "Package size: {size}",
+    "Abrir pestaña de actualización": "Open update tab",
+    "Cancelar descarga": "Cancel download",
+    "Instalar y reiniciar": "Install and restart",
+    "Instalando actualización…": "Installing update…",
+    "Progreso de descarga de la actualización": "Update download progress",
+    "Descargando paquete de actualización…": "Downloading update package…",
+    "{downloaded} de {total} ({percent}%)":
+      "{downloaded} of {total} ({percent}%)",
+    "Velocidad: {speed}/s": "Speed: {speed}/s",
+    "Descarga completada (100 %). Lista para instalar.":
+      "Download complete (100%). Ready to install.",
+    "Tus carpetas .data (mapas) y .state (preferencias) se conservan automáticamente. Tus partidas no se modifican.":
+      "Your .data (maps) and .state (settings) folders are preserved automatically. Your saves are never modified.",
+    "Novedades de esta versión": "What's new in this version",
+    "Ver lanzamiento en GitHub": "View release on GitHub",
+    "Descarga directa desde GitHub": "Direct download from GitHub",
+    "Volver a comprobar": "Check again",
     "No se pudieron buscar actualizaciones. Puedes reintentar.":
       "Could not check for updates. You can try again.",
     "Extrae el ZIP y reemplaza los ejecutables con HyruleSync cerrado. Conserva las carpetas .data y .state.":

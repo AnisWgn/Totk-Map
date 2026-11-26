@@ -135,6 +135,9 @@ export function Sidebar() {
         hidden
       >
         <strong id="updateMessage"></strong>
+        <button type="button" id="openUpdateTab">
+          {t("Abrir pestaña de actualización")}
+        </button>
         <button id="viewChanges" className="secondary" disabled>
           {t("Ver cambios")}
         </button>

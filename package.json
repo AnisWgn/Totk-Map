@@ -17,7 +17,7 @@
     "electron": "npm run build && electron .",
     "electron:dev": "electron . --dev",
     "electron:pack": "npm run build && node electron/copy-web-dist.js && electron-builder --dir",
-    "electron:build": "npm run build && node electron/copy-web-dist.js && electron-builder --win",
+    "electron:build": "npm run build && node electron/copy-web-dist.js && electron-builder --win --publish never",
     "lint": "eslint web/src electron vite.config.js eslint.config.js tests/web tests/electron",
     "test": "vitest run",
     "test:integration": "node tests/language.cjs && node tests/http-server.cjs && node tests/page-lifetime.cjs",

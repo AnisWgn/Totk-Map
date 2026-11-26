@@ -1,7 +1,7 @@
 import { useStoreValue } from "../use-store.js";
 import { I18N } from "../../shared/i18n.js";
 
-const views = ["map", "inventory", "quests", "world", "summary"];
+const baseViews = ["map", "inventory", "quests", "world", "summary"];
 
 const labels = {
   map: "Mapa",
@@ -11,8 +11,33 @@ const labels = {
   summary: "Resumen",
 };
 
+function updateTabLabel(updateState) {
+  if (updateState?.downloadStatus === "downloading") {
+    return I18N.t("Descargando actualización ({percent}%)", {
+      percent: updateState.downloadPercent ?? 0,
+    });
+  }
+  if (
+    updateState?.downloadStatus === "downloaded" ||
+    updateState?.downloadStatus === "applying"
+  ) {
+    return I18N.t("Actualización lista");
+  }
+
+  return I18N.t("Nueva actualización disponible");
+}
+
 export function ViewTabs({ store }) {
   const view = useStoreValue(store, "view");
+  const updateState = useStoreValue(store, "updateState");
+  const showUpdateTab = Boolean(
+    updateState?.available ||
+    updateState?.downloadStatus === "downloading" ||
+    updateState?.downloadStatus === "downloaded" ||
+    updateState?.downloadStatus === "applying" ||
+    view === "update",
+  );
+  const views = showUpdateTab ? [...baseViews, "update"] : baseViews;
 
   function navigate(event, current) {
     const index = views.indexOf(current);
@@ -39,7 +64,13 @@ export function ViewTabs({ store }) {
         <button
           key={name}
           id={name + "Tab"}
-          className={name === "summary" ? "summary-tab" : undefined}
+          className={
+            name === "summary"
+              ? "summary-tab"
+              : name === "update"
+                ? "update-tab"
+                : undefined
+          }
           role="tab"
           aria-selected={view === name}
           aria-controls={name + "Panel"}
@@ -47,7 +78,14 @@ export function ViewTabs({ store }) {
           onClick={() => store.actions.setSaveView(name)}
           onKeyDown={(event) => navigate(event, name)}
         >
-          {I18N.t(labels[name])}
+          {name === "update" ? (
+            <>
+              <i className="update-tab-dot" aria-hidden="true" />
+              <span>{updateTabLabel(updateState)}</span>
+            </>
+          ) : (
+            I18N.t(labels[name])
+          )}
         </button>
       ))}
     </nav>

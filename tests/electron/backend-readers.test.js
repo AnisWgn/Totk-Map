@@ -431,7 +431,7 @@ describe("Electron Node backend readers & utilities", () => {
         {
           name: "HyruleSync-Setup-v1.10.0.exe",
           browser_download_url:
-            "https://github.com/neimex23/HyruleSync/releases/download/v1.10.0/HyruleSync-Setup-v1.10.0.exe",
+            "https://github.com/AnisWgn/Totk-Map/releases/download/v1.10.0/HyruleSync-Setup-v1.10.0.exe",
           size: 1000,
           state: "uploaded",
         },
