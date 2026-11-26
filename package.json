@@ -1,7 +1,7 @@
 {
-  "name": "hyrulesync",
+  "name": "totkmap",
   "version": "1.0.0",
-  "description": "HyruleSync — Client lourd TOTK (Electron + React)",
+  "description": "Totkmap — Client lourd TOTK (Electron + React)",
   "author": "Neimex23",
   "license": "MIT",
   "private": true,

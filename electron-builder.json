@@ -1,6 +1,6 @@
 {
-  "appId": "com.hyrulesync.desktop",
-  "productName": "HyruleSync",
+  "appId": "com.totkmap.desktop",
+  "productName": "Totkmap",
   "directories": {
     "output": "outputs/electron"
   },

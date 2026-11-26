@@ -7,7 +7,7 @@ export function SetupScreen() {
     <section id="setup" hidden>
       <div className="setup-card">
         <img className="setup-logo" src="app-icon.png" alt="" />
-        <div className="eyebrow">{t("HYRULESYNC · PRIMER INICIO")}</div>
+        <div className="eyebrow">{t("TOTKMAP · PRIMER INICIO")}</div>
         <h2>{t("Prepara tu mapa")}</h2>
         <div className="language-setting">
           <label htmlFor="setupLanguageSelect">{t("Idioma")}</label>
@@ -28,7 +28,7 @@ export function SetupScreen() {
         </p>
         <p className="fine">
           {t(
-            "Los recursos se obtienen del repositorio de TotK Unexplored. HyruleSync es una aplicación independiente y conserva los créditos de esos recursos.",
+            "Los recursos se obtienen del repositorio de TotK Unexplored. Totkmap es una aplicación independiente y conserva los créditos de esos recursos.",
           )}
         </p>
         <button id="prepareResources">

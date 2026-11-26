@@ -40,7 +40,7 @@ export function UpdatePanel({ store }) {
       <div className="update-panel-inner">
         <header className="update-hero">
           <div className="eyebrow">
-            {t("ACTUALIZACIÓN AUTOMÁTICA · HYRULESYNC")}
+            {t("ACTUALIZACIÓN AUTOMÁTICA · TOTKMAP")}
           </div>
           <h2>
             {t("Nueva actualización disponible · v{version}", {

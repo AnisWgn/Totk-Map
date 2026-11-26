@@ -307,7 +307,9 @@ export function InventoryPanel({ store }) {
                   data={collectionData}
                   snapshot={snapshot}
                   model={model}
-                  savedPlan={store.actions.saveArmorPlan ? armorPlan : undefined}
+                  savedPlan={
+                    store.actions.saveArmorPlan ? armorPlan : undefined
+                  }
                   onPlanChange={store.actions.saveArmorPlan}
                   saveStatus={armorPlanStatus}
                 />

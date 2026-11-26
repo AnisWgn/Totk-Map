@@ -10,8 +10,8 @@ export function Sidebar() {
         <h1 className="brand">
           <img src="app-icon.png" alt="" />
           <span>
-            {t("Hyrule")}
-            <em>{t("Sync")}</em>
+            {t("Totk")}
+            <em>{t("map")}</em>
           </span>
         </h1>
         <p>{t("Descubre lo que queda por encontrar.")}</p>
@@ -20,7 +20,7 @@ export function Sidebar() {
         </button>
         <a
           className="report-button"
-          href="https://github.com/neimex23/HyruleSync/issues/new"
+          href="https://github.com/AnisWgn/Totk-Map/issues/new"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -173,7 +173,7 @@ export function Sidebar() {
         </a>
         <p>
           {t(
-            "Extrae el ZIP y reemplaza solo HyruleSync.exe y HyruleSync.Stop.exe con HyruleSync cerrado. Conserva las carpetas .data y .state (mapas y preferencias).",
+            "Extrae el ZIP y reemplaza solo Totkmap.exe con Totkmap cerrado. Conserva las carpetas .data y .state (mapas y preferencias).",
           )}
         </p>
       </section>

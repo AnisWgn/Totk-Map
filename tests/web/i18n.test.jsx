@@ -21,6 +21,9 @@ it("keeps interpolation and English/Spanish coverage across the React source", (
   for (const [source, translated] of Object.entries(I18N.translations))
     expect(fields(source), source).toEqual(fields(translated));
   const unchanged = new Set([
+    "Totkmap",
+    "Totk",
+    "map",
     "HyruleSync",
     "Hyrule",
     "Sync",

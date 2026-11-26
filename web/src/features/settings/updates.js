@@ -51,7 +51,7 @@ export function createUpdateController({
       if ($("viewChanges")) $("viewChanges").disabled = !state.releaseUrl;
       if ($("aboutChanges")) $("aboutChanges").disabled = !state.releaseUrl;
       if ($("aboutVersion"))
-        $("aboutVersion").textContent = "HyruleSync " + state.currentVersion;
+        $("aboutVersion").textContent = "Totkmap " + state.currentVersion;
       if ($("updateNotice")) $("updateNotice").hidden = !state.available;
       if ($("updateMessage")) {
         $("updateMessage").textContent = state.available
@@ -134,8 +134,7 @@ export function createUpdateController({
 
   function showChanges() {
     if (!latestUpdate?.releaseUrl) return;
-    $("changesVersion").textContent =
-      "HyruleSync v" + latestUpdate.latestVersion;
+    $("changesVersion").textContent = "Totkmap v" + latestUpdate.latestVersion;
     $("changesText").textContent =
       latestUpdate.releaseNotes?.trim() ||
       t("Esta versión no tiene notas de cambios.");

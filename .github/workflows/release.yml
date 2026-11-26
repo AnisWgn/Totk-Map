@@ -45,7 +45,7 @@ jobs:
             if (-not ($existing | ConvertFrom-Json).isDraft) { throw 'This tag already has a published release. Use a new version tag.' }
             gh release upload $env:RELEASE_TAG $package "$package.sha256" --clobber
           } else {
-            gh release create $env:RELEASE_TAG $package "$package.sha256" --verify-tag --draft --title "HyruleSync $env:RELEASE_TAG" --generate-notes
+            gh release create $env:RELEASE_TAG $package "$package.sha256" --verify-tag --draft --title "Totkmap $env:RELEASE_TAG" --generate-notes
           }
           if ($LASTEXITCODE -ne 0) { throw 'Could not prepare the draft release with its downloads.' }
           gh release edit $env:RELEASE_TAG --draft=false --latest

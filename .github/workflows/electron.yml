@@ -1,4 +1,4 @@
-name: Build & Publish Electron Windows
+name: Build & Publish Totkmap Windows
 on:
   push:
   pull_request:
@@ -46,10 +46,10 @@ jobs:
             $hash = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
             Set-Content -LiteralPath ($_.FullName + ".sha256") -Value "$hash  $($_.Name)" -Encoding ascii
           }
-      - name: Upload Electron Windows artifacts
+      - name: Upload Totkmap Windows artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: HyruleSync-Electron-Windows
+          name: Totkmap-Electron-Windows
           path: |
             outputs/electron/*.exe
             outputs/electron/*.exe.sha256
@@ -72,7 +72,7 @@ jobs:
           if ($LASTEXITCODE -eq 0) {
             gh release upload $env:RELEASE_TAG @assets --clobber
           } else {
-            gh release create $env:RELEASE_TAG @assets --target "${{ github.sha }}" --title "HyruleSync $env:RELEASE_TAG" --generate-notes --latest
+            gh release create $env:RELEASE_TAG @assets --target "${{ github.sha }}" --title "Totkmap $env:RELEASE_TAG" --generate-notes --latest
           }
           if ($LASTEXITCODE -ne 0) {
             throw "Failed to publish GitHub Release $env:RELEASE_TAG."

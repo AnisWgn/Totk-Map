@@ -6,7 +6,7 @@ const t = (key, values) => I18N.t(key, values);
 export function MapPanel({ hidden }) {
   return (
     <div id="mapPanel" role="tabpanel" aria-labelledby="mapTab" hidden={hidden}>
-      <div id="map" aria-label={t("Mapa de HyruleSync")}></div>
+      <div id="map" aria-label={t("Mapa de Totkmap")}></div>
 
       <div className="topbar">
         <MapQualityControl />

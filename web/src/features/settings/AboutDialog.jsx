@@ -6,7 +6,7 @@ export function AboutDialog() {
   return (
     <dialog id="aboutDialog">
       <form method="dialog">
-        <h2>{t("Acerca de HyruleSync")}</h2>
+        <h2>{t("Acerca de Totkmap")}</h2>
         <p id="aboutVersion"></p>
         <p id="updateStatus" role="status"></p>
         <button type="button" id="checkUpdates" className="secondary">
@@ -26,12 +26,12 @@ export function AboutDialog() {
         </a>
         <p id="aboutUpdateInstructions" hidden>
           {t(
-            "Extrae el ZIP y reemplaza los ejecutables con HyruleSync cerrado. Conserva las carpetas .data y .state.",
+            "Extrae el ZIP y reemplaza los ejecutables con Totkmap cerrado. Conserva las carpetas .data y .state.",
           )}
         </p>
         <a
           className="report-button"
-          href="https://github.com/neimex23/HyruleSync/issues/new"
+          href="https://github.com/AnisWgn/Totk-Map/issues/new"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -41,11 +41,11 @@ export function AboutDialog() {
         <h3>{t("Al cerrar la página")}</h3>
         <label className="switch background-setting">
           <input type="checkbox" id="runInBackground" />
-          <span>{t("Mantener HyruleSync en la bandeja")}</span>
+          <span>{t("Mantener Totkmap en la bandeja")}</span>
         </label>
         <p>
           {t(
-            "Al cerrar la última pestaña, HyruleSync se cierra después de unos segundos. Activa esta opción para seguir leyendo guardados en segundo plano.",
+            "Al cerrar la última pestaña, Totkmap se cierra después de unos segundos. Activa esta opción para seguir leyendo guardados en segundo plano.",
           )}
         </p>
 

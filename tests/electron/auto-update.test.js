@@ -28,16 +28,16 @@ describe("Auto-update engine: detection, streaming progress, SHA-256 verificatio
       prerelease: false,
       assets: [
         {
-          name: "HyruleSync-Setup-v1.0.5.exe",
+          name: "Totkmap-Setup-v1.0.5.exe",
           browser_download_url:
-            "https://github.com/AnisWgn/Totk-Map/releases/download/v1.0.5/HyruleSync-Setup-v1.0.5.exe",
+            "https://github.com/AnisWgn/Totk-Map/releases/download/v1.0.5/Totkmap-Setup-v1.0.5.exe",
           size: 80_000_000,
           state: "uploaded",
         },
         {
-          name: "HyruleSync-v1.0.5-portable.exe",
+          name: "Totkmap-v1.0.5-portable.exe",
           browser_download_url:
-            "https://github.com/AnisWgn/Totk-Map/releases/download/v1.0.5/HyruleSync-v1.0.5-portable.exe",
+            "https://github.com/AnisWgn/Totk-Map/releases/download/v1.0.5/Totkmap-v1.0.5-portable.exe",
           size: 75_000_000,
           state: "uploaded",
         },
@@ -51,13 +51,13 @@ describe("Auto-update engine: detection, streaming progress, SHA-256 verificatio
       { preferPortable: false },
     );
     expect(installerEval.available).toBe(true);
-    expect(installerEval.assetName).toBe("HyruleSync-Setup-v1.0.5.exe");
+    expect(installerEval.assetName).toBe("Totkmap-Setup-v1.0.5.exe");
 
     const portableEval = evaluateRelease(release, "1.0.4", "AnisWgn/Totk-Map", {
       preferPortable: true,
     });
     expect(portableEval.available).toBe(true);
-    expect(portableEval.assetName).toBe("HyruleSync-v1.0.5-portable.exe");
+    expect(portableEval.assetName).toBe("Totkmap-v1.0.5-portable.exe");
 
     // Same version but newer commit SHA is also detected as available
     const sameVersionNewCommit = evaluateRelease(

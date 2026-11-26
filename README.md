@@ -1,6 +1,6 @@
-# HyruleSync — Client lourd Electron (TOTK Map)
+# Totkmap — Client lourd Electron (TOTK Map)
 
-Application desktop autonome (**Electron.js + Node.js + React**) permettant de suivre en temps réel la progression de sauvegarde (`progress.sav`) sur *The Legend of Zelda: Tears of the Kingdom* (formats 1.0, 1.1/1.2 et 1.4 / Recomp), avec carte interactive SD/HD, inventaire, quêtes, encyclopédie et autosync en arrière-plan.
+Application desktop autonome (**Electron.js + Node.js + React**) permettant de suivre en temps réel la progression sur *The Legend of Zelda: Tears of the Kingdom* (formats 1.0, 1.1/1.2 et 1.4 / TotK Recomp), avec carte interactive SD/HD, synchronisation mémoire en direct avec **TotK Recomp (`totk.exe`)**, balises/tampons en jeu, inventaire, quêtes, encyclopédie et auto-update intégré.
 
 Aucune installation de compilateur C# / `.NET Framework` ni ouverture de navigateur externe n'est requise : le lecteur de sauvegardes, l'autosync, le cache de tuiles HD et l'interface tournent directement dans Electron.
 
@@ -39,8 +39,8 @@ npm run electron:build
 
 Deux fichiers sont générés dans `outputs/electron/` :
 
-1. **`HyruleSync-v1.0.0-portable.exe`** — Version portable sans installation (conserve `.data/` et `.state/` à côté de l'exécutable si le dossier est accessible en écriture).
-2. **`HyruleSync-Setup-v1.0.0.exe`** — Installateur Windows classique (raccourcis Bureau / Menu Démarrer, données stockées proprement dans `%APPDATA%\HyruleSync`).
+1. **`Totkmap-v1.0.0-portable.exe`** — Version portable sans installation (conserve `.data/` et `.state/` à côté de l'exécutable si le dossier est accessible en écriture).
+2. **`Totkmap-Setup-v1.0.0.exe`** — Installateur Windows classique (raccourcis Bureau / Menu Démarrer, données stockées proprement dans `%APPDATA%\Totkmap`).
 
 ---
 
@@ -49,7 +49,7 @@ Deux fichiers sont générés dans `outputs/electron/` :
 - **Fenêtre desktop native (`BrowserWindow`)** avec thème sombre natif, verrouillage d'instance unique et ouverture sécurisée des guides externes (*Zelda Dungeon*, *GitHub*) dans le navigateur système.
 - **Sélecteur de dossier natif Windows** via IPC sécurisé (`preload.cjs` / `contextIsolation`) pour choisir rapidement le dossier de sauvegardes TOTK.
 - **Icône dans la zone de notification (System Tray)** permettant d'ouvrir la fenêtre, choisir un dossier de sauvegardes, mettre en pause/reprendre l'Autosync ou garder l'application active en arrière-plan à la fermeture.
-- **Système d'auto-update intégré avec barre de progression** : dès qu'une modification est poussée ou fusionnée sur `Main`, GitHub Actions compile automatiquement une nouvelle release Windows (`v1.0.<build>`) avec empreinte `SHA-256`. Les clients ouverts affichent automatiquement un onglet **« New update available / Nueva actualización disponible »** avec bouton de téléchargement, **barre de progression en temps réel** (`%`, `Mo / Mo`, vitesse) et installation en un clic (**Install & Restart**).
+- **Système d'auto-update intégré avec barre de progression** : dès qu'une modification est poussée ou fusionnée sur `main`, GitHub Actions compile automatiquement une nouvelle release Windows (`Totkmap v1.0.<build>`) avec empreinte `SHA-256`. Les clients ouverts affichent automatiquement un onglet **« New update available / Nueva actualización disponible »** avec bouton de téléchargement, **barre de progression en temps réel** (`%`, `Mo / Mo`, vitesse) et installation en un clic (**Install & Restart**).
 - **Lecture 100 % en lecture seule** des fichiers `progress.sav` (aucune sauvegarde n'est jamais modifiée).
 
 ---
