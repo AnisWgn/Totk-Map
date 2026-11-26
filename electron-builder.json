@@ -1,0 +1,47 @@
+{
+  "appId": "com.hyrulesync.desktop",
+  "productName": "HyruleSync",
+  "directories": {
+    "output": "outputs/electron"
+  },
+  "files": [
+    "electron/**/*",
+    "web-dist/**/*",
+    "assets/**/*",
+    "licenses/**/*",
+    "LICENSE",
+    "THIRD_PARTY.md",
+    "docs/THIRD_PARTY.es.md",
+    "package.json",
+    "!node_modules/**/*"
+  ],
+  "asar": true,
+  "asarUnpack": [
+    "assets/hyrulesync.ico",
+    "assets/HyruleSync-icon.png",
+    "assets/HyruleSync-icon-32.png"
+  ],
+  "win": {
+    "icon": "assets/hyrulesync.ico",
+    "target": [
+      {
+        "target": "portable",
+        "arch": ["x64"]
+      },
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ]
+  },
+  "portable": {
+    "artifactName": "${productName}-v${version}-portable.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "artifactName": "${productName}-Setup-v${version}.${ext}"
+  }
+}

@@ -16,14 +16,21 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 let child, exited, url, origin;
 
 async function start() {
-    fs.copyFileSync(path.join(app, 'HyruleSync.exe'), path.join(work, 'HyruleSync.exe'));
+    const exeSource = path.join(app, 'HyruleSync.exe');
+    const useNativeExe = fs.existsSync(exeSource);
+    if (useNativeExe) {
+        fs.copyFileSync(exeSource, path.join(work, 'HyruleSync.exe'));
+    }
     fs.mkdirSync(path.join(work, '.state'), { recursive: true });
     if (!fs.existsSync(path.join(work, '.state/settings.json')))
         fs.writeFileSync(path.join(work, '.state/settings.json'), JSON.stringify({ runInBackground: true }));
     const urlFile = path.join(work, 'url.txt');
     if (fs.existsSync(urlFile)) fs.unlinkSync(urlFile);
-    child = cp.spawn(path.join(work, 'HyruleSync.exe'),
-        ['--no-browser', '--language', 'en', '--url-file', urlFile], { windowsHide: true });
+    child = useNativeExe
+        ? cp.spawn(path.join(work, 'HyruleSync.exe'),
+            ['--no-browser', '--language', 'en', '--url-file', urlFile], { windowsHide: true })
+        : cp.spawn(process.execPath,
+            [path.join(root, 'electron/server-cli.js'), '--quiet', '--home', work, '--language', 'en', '--url-file', urlFile]);
     let startError;
     child.once('error', error => { startError = error; });
     exited = new Promise(resolve => child.once('exit', resolve));
