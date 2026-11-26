@@ -5,6 +5,7 @@ const t = (key, values) => I18N.t(key, values);
 export function SetupScreen() {
   return (
     <section id="setup" hidden>
+      <div className="setup-drag-strip" aria-hidden="true"></div>
       <div className="setup-card">
         <img className="setup-logo" src="app-icon.png" alt="" />
         <div className="eyebrow">{t("TOTKMAP · PRIMER INICIO")}</div>

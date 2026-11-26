@@ -3,14 +3,64 @@ main {
   flex-direction: column;
 }
 
-.view-tabs {
+.workspace-topbar {
   display: flex;
-  gap: 8px;
-  padding: 10px 24px;
+  align-items: center;
+  min-height: 58px;
   background: #142329;
   border-bottom: 1px solid #53615c;
   flex-shrink: 0;
+}
+
+.view-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  flex: 1;
+  min-width: 0;
   overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.view-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+html.is-electron .workspace-topbar,
+html.is-electron .view-tabs {
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+html.is-electron:not(.electron-darwin) .workspace-topbar {
+  padding-right: max(
+    142px,
+    calc(
+      100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) + 8px
+    )
+  );
+}
+
+html.is-electron button,
+html.is-electron a,
+html.is-electron input,
+html.is-electron select,
+html.is-electron summary,
+html.is-electron label,
+html.is-electron dialog {
+  -webkit-app-region: no-drag;
+}
+
+@media (max-width: 1180px) {
+  html.is-electron:not(.electron-darwin) .view-tabs {
+    padding: 10px 14px;
+    gap: 5px;
+  }
+
+  html.is-electron:not(.electron-darwin) .view-tabs button {
+    padding: 9px 14px;
+  }
 }
 
 .view-tabs button {

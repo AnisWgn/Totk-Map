@@ -5,6 +5,7 @@ const t = (key, values) => I18N.t(key, values);
 export function Sidebar() {
   return (
     <aside id="sidebar">
+      <div className="sidebar-drag-strip" aria-hidden="true"></div>
       <header>
         <div className="eyebrow">{t("EXPLORA · GUARDA · SINCRONIZA")}</div>
         <h1 className="brand">

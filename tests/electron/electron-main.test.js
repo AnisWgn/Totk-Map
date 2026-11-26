@@ -224,6 +224,16 @@ describe("Electron desktop shell (main.js & preload.cjs)", () => {
       });
       expect(runtime).not.toBeNull();
       expect(runtime.mainWindow).not.toBeNull();
+      if (process.platform === "darwin") {
+        expect(runtime.mainWindow.options.titleBarStyle).toBe("hiddenInset");
+      } else {
+        expect(runtime.mainWindow.options.titleBarStyle).toBe("hidden");
+        expect(runtime.mainWindow.options.titleBarOverlay).toEqual({
+          color: "rgba(0, 0, 0, 0)",
+          symbolColor: "#e5e7e4",
+          height: 58,
+        });
+      }
       expect(runtime.mainWindow.options.webPreferences.contextIsolation).toBe(
         true,
       );

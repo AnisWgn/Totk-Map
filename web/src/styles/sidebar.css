@@ -9,6 +9,24 @@
   scrollbar-color: #58656a transparent;
 }
 
+.sidebar-drag-strip {
+  display: none;
+}
+
+html.is-electron .sidebar-drag-strip {
+  display: block;
+  position: sticky;
+  top: 0;
+  height: 20px;
+  margin-bottom: -20px;
+  z-index: 5;
+  -webkit-app-region: drag;
+}
+
+html.is-electron.electron-darwin #sidebar header {
+  padding-top: 38px;
+}
+
 header {
   padding: 25px 22px 20px;
 }
