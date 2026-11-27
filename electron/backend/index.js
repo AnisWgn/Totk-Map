@@ -595,7 +595,17 @@ export function createBackend({
     ],
     [
       "api/download-update",
-      { requiresMap: false, handle: () => updates.startDownload() },
+      {
+        requiresMap: false,
+        handle: (body) => {
+          let autoApply = false;
+          try {
+            const raw = body.toString("utf8").trim();
+            if (raw) autoApply = Boolean(JSON.parse(raw)?.autoApply);
+          } catch {}
+          return updates.startDownload({ autoApply });
+        },
+      },
     ],
     [
       "api/cancel-update",

@@ -159,7 +159,7 @@ export function Sidebar() {
       >
         <strong id="updateMessage"></strong>
         <button type="button" id="openUpdateTab">
-          {t("Abrir pestaña de actualización")}
+          {t("Actualizar y reiniciar automáticamente")}
         </button>
         <button id="viewChanges" className="secondary" disabled>
           {t("Ver cambios")}
@@ -169,10 +169,11 @@ export function Sidebar() {
           className="download-button"
           target="_blank"
           rel="noopener noreferrer"
+          hidden
         >
           {t("Descargar actualización")}
         </a>
-        <p>
+        <p id="updateManualHint" hidden>
           {t(
             "Extrae el ZIP y reemplaza solo Totkmap.exe con Totkmap cerrado. Conserva las carpetas .data y .state (mapas y preferencias).",
           )}

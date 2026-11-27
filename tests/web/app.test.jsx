@@ -1162,4 +1162,34 @@ describe("map and React integration", () => {
     expect(requests).toHaveLength(before);
     expect(sessions).toHaveLength(1);
   });
+  it("shows unlocked save icons in semi-transparent mode and toggles them via #toggleCompleted", async () => {
+    state.snapshot = {
+      ...snapshot(),
+      states: [1, 1, 0],
+      values: [1, 1, 0],
+    };
+    localStorage.setItem(
+      "hyrulesync.preferences",
+      JSON.stringify({ active: ["caves", "shrines"], mode: "missing" }),
+    );
+    await mount();
+    const toggleBtn = node("toggleCompleted");
+    expect(toggleBtn.getAttribute("aria-pressed")).toBe("true");
+    const markers = () => leaflet.layers[1].items;
+    // c0 (x: 20, unlocked) is visible in viewport with semi-transparent .point-icon.found class
+    expect(markers()).toHaveLength(1);
+    expect(markers()[0].options.title).toBe("Árbol");
+    expect(markers()[0].options.icon.className).toContain("point-icon found");
+
+    // Click #toggleCompleted -> hides unlocked items
+    fireEvent.click(toggleBtn);
+    expect(toggleBtn.getAttribute("aria-pressed")).toBe("false");
+    expect(markers()).toHaveLength(0);
+
+    // Click #toggleCompleted again -> restores semi-transparent unlocked items
+    fireEvent.click(toggleBtn);
+    expect(toggleBtn.getAttribute("aria-pressed")).toBe("true");
+    expect(markers()).toHaveLength(1);
+    expect(markers()[0].options.icon.className).toContain("point-icon found");
+  });
 });

@@ -277,4 +277,85 @@ describe("Auto-update engine: detection, streaming progress, SHA-256 verificatio
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
   });
+
+  it("automatically applies and restarts when startDownload({ autoApply: true }) finishes", async () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "totkmap-autoapply-"));
+    try {
+      const payload = Buffer.from("MZ-totkmap-silent-update-binary");
+      const expectedSha = sha256Hex(payload);
+      const downloadUrl =
+        "https://github.com/AnisWgn/Totk-Map/releases/download/v1.0.30/Totkmap-Setup-v1.0.30.exe";
+      const shaUrl = `${downloadUrl}.sha256`;
+
+      const applied = [];
+      const checker = new UpdateChecker({
+        currentVersion: "1.0.20",
+        locale: new LocaleManager("en-US"),
+        repository: "AnisWgn/Totk-Map",
+        updatesDir: tmpDir,
+        canAutoInstall: true,
+        onApplyUpdate: async (info) => {
+          applied.push(info);
+        },
+        fetchImpl: async (url) => {
+          if (String(url).endsWith("/releases/latest")) {
+            return {
+              status: 200,
+              ok: true,
+              json: async () => ({
+                tag_name: "v1.0.30",
+                body: "feat: silent automatic update & relaunch",
+                draft: false,
+                prerelease: false,
+                assets: [
+                  {
+                    name: "Totkmap-Setup-v1.0.30.exe",
+                    browser_download_url: downloadUrl,
+                    size: payload.length,
+                    state: "uploaded",
+                  },
+                  {
+                    name: "Totkmap-Setup-v1.0.30.exe.sha256",
+                    browser_download_url: shaUrl,
+                    size: 96,
+                    state: "uploaded",
+                  },
+                ],
+              }),
+            };
+          }
+          if (url === downloadUrl) {
+            return {
+              status: 200,
+              ok: true,
+              headers: new Headers({
+                "content-length": String(payload.length),
+              }),
+              body: (async function* () {
+                yield payload;
+              })(),
+            };
+          }
+          return {
+            status: 200,
+            ok: true,
+            text: async () => `${expectedSha}  Totkmap-Setup-v1.0.30.exe\n`,
+          };
+        },
+      });
+
+      await checker.checkNow();
+      checker.startDownload({ autoApply: true });
+      for (let i = 0; i < 40 && applied.length === 0; i++) {
+        await new Promise((r) => setTimeout(r, 15));
+      }
+
+      expect(applied).toHaveLength(1);
+      expect(applied[0].assetName).toBe("Totkmap-Setup-v1.0.30.exe");
+      expect(applied[0].version).toBe("1.0.30");
+      expect(checker.state().downloadStatus).toBe("applying");
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
+  });
 });

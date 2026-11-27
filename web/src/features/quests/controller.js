@@ -85,10 +85,12 @@ export function createQuestController(context) {
   }
 
   function questRenderKey() {
+    const onMap = questsOnMap();
+
     return JSON.stringify([
       context.layer,
-      context.map.getZoom(),
-      questsOnMap(),
+      onMap ? Math.round(context.map.getZoom() * 2) / 2 : 0,
+      onMap,
       filters.query,
       filters.type,
       filters.state,

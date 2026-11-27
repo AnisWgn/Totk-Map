@@ -1,5 +1,6 @@
 import cp from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -343,18 +344,32 @@ export async function startElectronApp(
       const portableTarget = process.env.PORTABLE_EXECUTABLE_FILE;
       if (portableTarget && String(assetName).includes("-portable.exe")) {
         const scriptPath = path.join(
-          path.dirname(filePath),
-          "apply-portable-update.ps1",
+          os.tmpdir(),
+          `totkmap-portable-update-${process.pid}.ps1`,
         );
         const script = [
           "param([int]$TargetPid, [string]$SourceExe, [string]$DestExe)",
+          "$ErrorActionPreference = 'SilentlyContinue'",
           "for ($i = 0; $i -lt 120; $i++) {",
           "  if (-not (Get-Process -Id $TargetPid -ErrorAction SilentlyContinue)) { break }",
-          "  Start-Sleep -Milliseconds 500",
+          "  Start-Sleep -Milliseconds 250",
           "}",
-          "Start-Sleep -Milliseconds 400",
-          "Copy-Item -LiteralPath $SourceExe -Destination $DestExe -Force",
-          "Start-Process -FilePath $DestExe",
+          "$copied = $false",
+          "for ($attempt = 0; $attempt -lt 80; $attempt++) {",
+          "  try {",
+          "    Copy-Item -LiteralPath $SourceExe -Destination $DestExe -Force -ErrorAction Stop",
+          "    $copied = $true",
+          "    break",
+          "  } catch {",
+          "    Start-Sleep -Milliseconds 300",
+          "  }",
+          "}",
+          "if ($copied) {",
+          "  Remove-Item -LiteralPath $SourceExe -Force -ErrorAction SilentlyContinue",
+          "}",
+          "$workDir = Split-Path -Parent $DestExe",
+          "Start-Process -FilePath $DestExe -WorkingDirectory $workDir",
+          "Remove-Item -LiteralPath $PSCommandPath -Force -ErrorAction SilentlyContinue",
         ].join("\r\n");
         fs.writeFileSync(scriptPath, script, "utf8");
         const child = spawnProcess(
@@ -375,11 +390,48 @@ export async function startElectronApp(
         );
         child?.unref?.();
       } else {
-        const child = spawnProcess(filePath, [], {
-          detached: true,
-          stdio: "ignore",
-          windowsHide: false,
-        });
+        const scriptPath = path.join(
+          os.tmpdir(),
+          `totkmap-nsis-update-${process.pid}.ps1`,
+        );
+        const script = [
+          "param([int]$TargetPid, [string]$InstallerExe, [string]$AppExe)",
+          "$ErrorActionPreference = 'SilentlyContinue'",
+          "for ($i = 0; $i -lt 120; $i++) {",
+          "  if (-not (Get-Process -Id $TargetPid -ErrorAction SilentlyContinue)) { break }",
+          "  Start-Sleep -Milliseconds 250",
+          "}",
+          "Start-Sleep -Milliseconds 300",
+          "$proc = Start-Process -FilePath $InstallerExe -ArgumentList @('--updated', '--force-run', '/S') -PassThru -WindowStyle Hidden",
+          "if ($proc) {",
+          "  $proc.WaitForExit(180000) | Out-Null",
+          "}",
+          "Start-Sleep -Milliseconds 800",
+          "$appName = [System.IO.Path]::GetFileNameWithoutExtension($AppExe)",
+          "$running = Get-Process -Name $appName -ErrorAction SilentlyContinue",
+          "if (-not $running -and (Test-Path -LiteralPath $AppExe)) {",
+          "  Start-Process -FilePath $AppExe -WorkingDirectory (Split-Path -Parent $AppExe)",
+          "}",
+          "Remove-Item -LiteralPath $InstallerExe -Force -ErrorAction SilentlyContinue",
+          "Remove-Item -LiteralPath $PSCommandPath -Force -ErrorAction SilentlyContinue",
+        ].join("\r\n");
+        fs.writeFileSync(scriptPath, script, "utf8");
+        const child = spawnProcess(
+          "powershell.exe",
+          [
+            "-NoProfile",
+            "-WindowStyle",
+            "Hidden",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            scriptPath,
+            String(process.pid),
+            filePath,
+            process.execPath,
+          ],
+          { detached: true, stdio: "ignore", windowsHide: true },
+        );
         child?.unref?.();
       }
 

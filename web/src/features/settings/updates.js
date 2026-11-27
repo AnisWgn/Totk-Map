@@ -61,19 +61,23 @@ export function createUpdateController({
           : "";
       }
 
-      const canDownload = Boolean(state.available && state.downloadUrl);
+      const canManualDownload = Boolean(
+        state.available && state.downloadUrl && !state.canAutoInstall,
+      );
 
       for (const id of ["downloadUpdate", "aboutDownloadUpdate"]) {
         const download = $(id);
 
         if (!download) continue;
-        download.hidden = !canDownload;
+        download.hidden = !canManualDownload;
         download.removeAttribute("href");
-        if (canDownload) download.href = state.downloadUrl;
+        if (canManualDownload) download.href = state.downloadUrl;
       }
 
+      if ($("updateManualHint"))
+        $("updateManualHint").hidden = !canManualDownload;
       if ($("aboutUpdateInstructions"))
-        $("aboutUpdateInstructions").hidden = !canDownload;
+        $("aboutUpdateInstructions").hidden = !canManualDownload;
 
       if ($("updateStatus")) {
         $("updateStatus").textContent = state.busy
@@ -102,11 +106,11 @@ export function createUpdateController({
     }
   }
 
-  async function postUpdateAction(endpoint) {
+  async function postUpdateAction(endpoint, payload = "") {
     try {
       const response = await fetch(endpoint, {
         method: "POST",
-        body: "",
+        body: payload,
       });
       const data = await response.json().catch(() => null);
 
@@ -121,7 +125,12 @@ export function createUpdateController({
   }
 
   function startUpdateDownload() {
-    return postUpdateAction("api/download-update");
+    const autoApply = Boolean(latestUpdate?.canAutoInstall);
+
+    return postUpdateAction(
+      "api/download-update",
+      JSON.stringify({ autoApply }),
+    );
   }
 
   function cancelUpdateDownload() {

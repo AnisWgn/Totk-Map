@@ -119,8 +119,10 @@ export function UpdatePanel({ store }) {
                 onClick={() => store.actions.startUpdateDownload?.()}
               >
                 {hasError
-                  ? t("Reintentar descarga")
-                  : t("Descargar actualización")}
+                  ? t("Reintentar actualización")
+                  : update?.canAutoInstall
+                    ? t("Actualizar y reiniciar automáticamente")
+                    : t("Descargar actualización")}
               </button>
             )}
 

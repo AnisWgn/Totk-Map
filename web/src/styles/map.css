@@ -39,17 +39,24 @@ main {
   align-items: center;
   justify-content: center;
   border: 0;
-  filter: drop-shadow(0 1px 2px #000b);
+  contain: layout style;
+  backface-visibility: hidden;
 }
 
 .point-icon img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  pointer-events: none;
 }
 
 .point-icon.found {
-  opacity: 0.5;
+  opacity: 0.36;
+  transition: opacity 0.12s ease;
+}
+
+.point-icon.found:hover {
+  opacity: 0.88;
 }
 
 .point-icon.discovered img,
@@ -107,6 +114,7 @@ main {
   border-radius: 50%;
   outline: 2px solid #e9da9a;
   outline-offset: 4px;
+  filter: drop-shadow(0 2px 6px #000c);
 }
 
 .location-label {
@@ -177,6 +185,43 @@ main {
 .layers button.active {
   background: #d8c590;
   color: #26352b;
+}
+
+.completed-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #71807888;
+  border-radius: 6px;
+  background: #17262ae8;
+  color: #a9b6ae;
+  padding: 11px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  box-shadow: 0 6px 25px #0004;
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+}
+
+.completed-toggle-btn .completed-toggle-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #677770;
+  opacity: 0.65;
+  flex-shrink: 0;
+}
+
+.completed-toggle-btn.active {
+  border-color: #d8c590aa;
+  background: #223533ee;
+  color: #efe2b4;
+}
+
+.completed-toggle-btn.active .completed-toggle-dot {
+  background: #d8c590;
+  opacity: 1;
+  box-shadow: 0 0 7px #d8c59088;
 }
 
 #visibleCount {

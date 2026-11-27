@@ -552,6 +552,12 @@ export const I18N = (() => {
     "Descargando actualización ({percent}%)": "Downloading update ({percent}%)",
     "ACTUALIZACIÓN AUTOMÁTICA · HYRULESYNC": "AUTO-UPDATE · HYRULESYNC",
     "ACTUALIZACIÓN AUTOMÁTICA · TOTKMAP": "AUTO-UPDATE · TOTKMAP",
+    "Actualizar y reiniciar automáticamente":
+      "Update and restart automatically",
+    "Reintentar actualización": "Retry update",
+    Desbloqueados: "Unlocked",
+    "Mostrar u ocultar en semitransparente los iconos ya desbloqueados en tu partida":
+      "Show or hide already-unlocked icons from your save in semi-transparent",
     "Nueva actualización disponible · v{version}":
       "New update available · v{version}",
     "Versión actual: v{current} → Nueva versión: v{latest}":
