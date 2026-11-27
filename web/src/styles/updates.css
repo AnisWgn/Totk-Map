@@ -162,7 +162,7 @@
 .update-notes-text {
   margin: 0;
   padding: 14px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: #0d171b;
   border: 1px solid #334348;
   color: var(--text);

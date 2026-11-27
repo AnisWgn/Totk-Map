@@ -1,23 +1,24 @@
 dialog {
   color: var(--text);
-  background: #17272d;
-  border: 1px solid #7d8a7d;
-  border-radius: 9px;
-  padding: 25px;
+  background: #121c21;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 26px;
   width: 500px;
   max-width: 90vw;
-  box-shadow: 0 15px 60px #0009;
+  box-shadow: var(--shadow);
 }
 
 dialog::backdrop {
-  background: #0009;
-  backdrop-filter: blur(3px);
+  background: #00000099;
+  backdrop-filter: blur(4px);
 }
 
 dialog h2 {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 400;
   margin: 12px 0;
+  letter-spacing: -0.3px;
 }
 
 dialog p {
@@ -41,10 +42,10 @@ dialog input {
     12px "Segoe UI",
     sans-serif;
   padding: 10px;
-  background: #0d1a20;
+  background: #0a1216;
   color: var(--text);
-  border: 1px solid #526268;
-  border-radius: 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
 }
 
 .dialog-actions {
@@ -66,7 +67,7 @@ dialog input {
   background: var(--gold);
   color: #202923;
   border: 1px solid transparent;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   padding: 9px 12px;
   font-size: 12px;
   font-weight: 600;
@@ -142,7 +143,7 @@ h1.brand em {
   position: fixed;
   inset: 0;
   z-index: 1200;
-  background: radial-gradient(ellipse at 30% 20%, #233f43, #0c171d 75%);
+  background: radial-gradient(ellipse at 30% 20%, #1c2f33, #0b1114 75%);
   display: grid;
   place-items: center;
   padding: 25px;
@@ -168,11 +169,11 @@ html.is-electron .setup-drag-strip {
   z-index: 1;
   width: 440px;
   max-width: 100%;
-  border: 1px solid #64786d;
-  border-radius: 14px;
-  background: #14272dec;
-  box-shadow: 0 20px 70px #0005;
-  padding: 35px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #121c21f2;
+  box-shadow: var(--shadow);
+  padding: 34px;
 }
 
 html.is-electron .setup-card {
@@ -180,15 +181,16 @@ html.is-electron .setup-card {
 }
 
 .setup-logo {
-  width: 72px;
-  height: 72px;
-  margin-bottom: 24px;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 22px;
 }
 
 .setup-card h2 {
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 400;
-  margin: 12px 0 20px;
+  margin: 12px 0 18px;
+  letter-spacing: -0.5px;
 }
 
 .setup-card p {
@@ -240,8 +242,8 @@ html.is-electron .setup-card {
 #folderEntries {
   max-height: 170px;
   overflow: auto;
-  border: 1px solid #526268;
-  border-radius: 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
 }
 
 .folder-entry {
@@ -251,23 +253,19 @@ html.is-electron .setup-card {
   border-radius: 0;
   text-align: left;
   padding: 8px 12px;
-  background: #102127;
+  background: #0d151a;
   color: var(--text);
   font-weight: 400;
 }
 
-.folder-entry:hover {
-  background: #294139;
+.folder-entry:hover:not(:disabled) {
+  filter: none;
+  background: #1a262d;
 }
 
 #folderEntries p {
   padding: 6px 12px;
   font-size: 11px;
-}
-
-.about-link {
-  margin-top: 12px;
-  text-align: left;
 }
 
 dialog h3 {
@@ -311,14 +309,6 @@ dialog h3 {
   font-size: 10px;
 }
 
-.link-tracking {
-  margin-top: 12px;
-}
-
-.link-tracking .switch {
-  margin-top: 10px;
-}
-
 .link-marker {
   display: grid;
   place-items: center;
@@ -337,8 +327,8 @@ dialog h3 {
   display: inline-block;
   font-size: 11px;
   text-decoration: none;
-  border: 1px solid #63737a;
-  border-radius: 5px;
+  border: 1px solid #4a5a61;
+  border-radius: var(--radius-sm);
   padding: 8px 10px;
   margin-top: 10px;
 }
@@ -350,17 +340,6 @@ dialog h3 {
 
 .report-button {
   margin-left: 8px;
-}
-
-.update-notice {
-  margin-top: 12px;
-  border-color: var(--gold);
-}
-
-.update-notice strong {
-  display: block;
-  font-size: 12px;
-  color: var(--gold);
 }
 
 .download-button {
@@ -378,19 +357,12 @@ dialog h3 {
   font-size: 12px;
 }
 
-.link-tracking h2 {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--gold);
-  margin: 0 0 12px;
-}
-
 .link-display-controls {
   display: grid;
   gap: 14px;
   margin: 14px 0;
   padding: 12px 0;
-  border-block: 1px solid #65736b55;
+  border-block: 1px solid var(--line-soft);
 }
 
 .link-display-controls label {
@@ -434,10 +406,6 @@ dialog h3 {
   opacity: 0.5;
 }
 
-.link-tracking details {
-  font-size: 10px;
-}
-
 .link-marker.in-shrine {
   background: #2f577b;
   border-color: #d4eaff;
@@ -469,10 +437,10 @@ dialog h3 {
   right: 70px;
   max-width: 650px;
   padding: 12px;
-  background: #182c35f5;
+  background: #121c21f5;
   border: 1px solid var(--gold);
-  border-radius: 8px;
-  box-shadow: 0 3px 18px #0006;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -507,10 +475,11 @@ dialog h3 {
 }
 
 .save-slot {
-  border: 1px solid #526268;
-  border-radius: 7px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   padding: 14px;
   overflow-wrap: anywhere;
+  background: #ffffff05;
 }
 
 .save-slot strong {
@@ -555,7 +524,7 @@ dialog h3 {
 .save-counts td {
   text-align: left;
   padding: 8px 6px;
-  border-bottom: 1px solid #40535b;
+  border-bottom: 1px solid var(--line);
 }
 
 .save-counts th {
@@ -644,8 +613,8 @@ dialog h3 {
   display: inline-block;
   margin: 10px 0 0;
   padding: 9px 12px;
-  border: 1px solid #63737a;
-  border-radius: 5px;
+  border: 1px solid #4a5a61;
+  border-radius: var(--radius-sm);
   color: var(--gold);
   font-size: 11px;
   text-decoration: none;

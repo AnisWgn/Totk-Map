@@ -6,8 +6,8 @@ export function Sidebar() {
   return (
     <aside id="sidebar">
       <div className="sidebar-drag-strip" aria-hidden="true"></div>
-      <header>
-        <div className="eyebrow">{t("EXPLORA · GUARDA · SINCRONIZA")}</div>
+
+      <header className="sidebar-header">
         <h1 className="brand">
           <img src="app-icon.png" alt="" />
           <span>
@@ -15,182 +15,47 @@ export function Sidebar() {
             <em>{t("map")}</em>
           </span>
         </h1>
-        <p>{t("Descubre lo que queda por encontrar.")}</p>
-        <button id="aboutOpen" className="link-button about-link">
-          {t("Acerca de, licencias y créditos")}
-        </button>
-        <a
-          className="report-button"
-          href="https://github.com/AnisWgn/Totk-Map/issues/new"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t("Reportar problema")}
-        </a>
-        <div className="language-setting">
-          <label htmlFor="languageSelect">{t("Idioma")}</label>
-          <select id="languageSelect" data-language-select="">
-            <option value="auto">{t("Automático (Windows)")}</option>
-            <option value="es" lang="es">
-              {t("Español")}
-            </option>
-            <option value="en" lang="en">
-              {t("English")}
-            </option>
-          </select>
+        <p className="brand-tagline">
+          {t("Descubre lo que queda por encontrar.")}
+        </p>
+        <div className="header-utility">
+          <button id="aboutOpen" className="link-button">
+            {t("Acerca de, licencias y créditos")}
+          </button>
+          <a
+            className="link-button report-link"
+            href="https://github.com/AnisWgn/Totk-Map/issues/new"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t("Reportar problema")}
+          </a>
+          <label className="language-setting" htmlFor="languageSelect">
+            <span className="visually-hidden">{t("Idioma")}</span>
+            <select id="languageSelect" data-language-select="">
+              <option value="auto">{t("Automático (Windows)")}</option>
+              <option value="es" lang="es">
+                {t("Español")}
+              </option>
+              <option value="en" lang="en">
+                {t("English")}
+              </option>
+            </select>
+          </label>
         </div>
       </header>
 
-      <section className="source">
-        <div className="source-heading">
-          <i id="statusDot"></i>
-          <strong id="statusTitle">{t("Cargando partida…")}</strong>
-          <span className="badge">{t("SOLO LECTURA")}</span>
-        </div>
-        <p id="sourceName">{t("Reconociendo el guardado configurado…")}</p>
-
-        <div className="load-buttons">
-          <button id="openFolder" disabled>
-            {t("Seguir carpeta")}
-          </button>
-          <button id="openSave" className="secondary" disabled>
-            {t("Cargar .sav")}
-          </button>
-        </div>
-        <label className="switch">
-          <input type="checkbox" id="autosync" />
-          <span>{t("Autosync al guardar")}</span>
-          <button id="refresh" className="link-button">
-            {t("Actualizar ahora")}
-          </button>
-        </label>
-        <p id="liveStatus" role="status"></p>
-        <p id="saveInfo"></p>
-        <button id="openSaves" className="secondary">
-          {t("Guardados")}
-        </button>
-        <p id="error" role="alert" hidden></p>
-      </section>
-
-      <section
-        className="source link-tracking"
-        aria-labelledby="linkControlsTitle"
-      >
-        <h2 id="linkControlsTitle">{t("Link en el mapa")}</h2>
-        <label className="switch">
-          <input type="checkbox" id="showLink" defaultChecked />
-          <span>{t("Mostrar Link")}</span>
-        </label>
-        <label className="switch">
-          <input type="checkbox" id="followLink" />
-          <span>{t("Seguir a Link al actualizar")}</span>
-        </label>
-
-        <div className="link-display-controls">
-          <div className="link-order">
-            <label htmlFor="linkOrder">{t("Orden del marcador")}</label>
-            <select id="linkOrder" defaultValue="below">
-              <option value="above">{t("Encima de los iconos")}</option>
-              <option value="below">{t("Debajo de los iconos")}</option>
-            </select>
+      <section className="summary" aria-label={t("TU PROGRESO EN HYRULE")}>
+        <div className="summary-top">
+          <div className="numbers">
+            <strong id="foundCount">{t("—")}</strong>
+            <span>
+              {t("completados de ")}
+              <b id="totalCount">{t("—")}</b>
+            </span>
           </div>
-          <div className="link-opacity">
-            <div className="opacity-label">
-              <label htmlFor="linkOpacity">{t("Opacidad")}</label>
-              <output id="linkOpacityValue" htmlFor="linkOpacity">
-                {t("45%")}
-              </output>
-            </div>
-            <input
-              type="range"
-              id="linkOpacity"
-              min="0"
-              max="100"
-              step="5"
-              defaultValue="45"
-            />
-          </div>
+          <div className="eyebrow">{t("TU PROGRESO EN HYRULE")}</div>
         </div>
-        <button id="centerLink" className="secondary" disabled>
-          {t("Centrar en Link")}
-        </button>
-        <p id="linkPosition" role="status">
-          {t("La posición de Link no está disponible en este guardado.")}
-        </p>
-        <p>
-          {t(
-            "Posición del último guardado leído; se actualiza al guardar la partida.",
-          )}
-        </p>
-
-        <details>
-          <summary>{t("Diagnóstico de posición")}</summary>
-          <p id="linkDiagnostics"></p>
-        </details>
-      </section>
-
-      <section
-        className="source recomp-live-section"
-        aria-labelledby="recompLiveTitle"
-      >
-        <h2 id="recompLiveTitle">{t("TotK Recomp · Tiempo real")}</h2>
-        <label className="switch">
-          <input type="checkbox" id="recompLiveToggle" />
-          <span>{t("Sincronización en vivo (sin esperar autoguardado)")}</span>
-          <button type="button" id="recompRescan" className="link-button">
-            {t("Reescanear")}
-          </button>
-        </label>
-        <p id="recompLiveInfo" role="status"></p>
-        <label className="switch">
-          <input type="checkbox" id="showGamePins" defaultChecked />
-          <span>{t("Mostrar balizas y sellos del juego")}</span>
-        </label>
-        <p className="fine">
-          {t("Haz clic derecho en el mapa para colocar una baliza luminosa.")}
-        </p>
-      </section>
-
-      <section
-        id="updateNotice"
-        className="source update-notice"
-        role="status"
-        hidden
-      >
-        <strong id="updateMessage"></strong>
-        <button type="button" id="openUpdateTab">
-          {t("Actualizar y reiniciar automáticamente")}
-        </button>
-        <button id="viewChanges" className="secondary" disabled>
-          {t("Ver cambios")}
-        </button>
-        <a
-          id="downloadUpdate"
-          className="download-button"
-          target="_blank"
-          rel="noopener noreferrer"
-          hidden
-        >
-          {t("Descargar actualización")}
-        </a>
-        <p id="updateManualHint" hidden>
-          {t(
-            "Extrae el ZIP y reemplaza solo Totkmap.exe con Totkmap cerrado. Conserva las carpetas .data y .state (mapas y preferencias).",
-          )}
-        </p>
-      </section>
-
-      <section className="summary">
-        <div className="eyebrow">{t("TU PROGRESO EN HYRULE")}</div>
-
-        <div className="numbers">
-          <strong id="foundCount">{t("—")}</strong>
-          <span>
-            {t("completados de ")}
-            <b id="totalCount">{t("—")}</b>
-          </span>
-        </div>
-
         <div className="progress">
           <i id="progress"></i>
         </div>
@@ -238,6 +103,145 @@ export function Sidebar() {
       </div>
 
       <div id="categories"></div>
+
+      <section
+        id="updateNotice"
+        className="source update-notice"
+        role="status"
+        hidden
+      >
+        <strong id="updateMessage"></strong>
+        <button type="button" id="openUpdateTab">
+          {t("Actualizar y reiniciar automáticamente")}
+        </button>
+        <button id="viewChanges" className="secondary" disabled>
+          {t("Ver cambios")}
+        </button>
+        <a
+          id="downloadUpdate"
+          className="download-button"
+          target="_blank"
+          rel="noopener noreferrer"
+          hidden
+        >
+          {t("Descargar actualización")}
+        </a>
+        <p id="updateManualHint" hidden>
+          {t(
+            "Extrae el ZIP y reemplaza solo Totkmap.exe con Totkmap cerrado. Conserva las carpetas .data y .state (mapas y preferencias).",
+          )}
+        </p>
+      </section>
+
+      <section className="source save-section" aria-label={t("Partida")}>
+        <div className="source-heading">
+          <i id="statusDot"></i>
+          <strong id="statusTitle">{t("Cargando partida…")}</strong>
+          <span className="badge">{t("SOLO LECTURA")}</span>
+        </div>
+        <p id="sourceName">{t("Reconociendo el guardado configurado…")}</p>
+
+        <div className="load-buttons">
+          <button id="openFolder" disabled>
+            {t("Seguir carpeta")}
+          </button>
+          <button id="openSave" className="secondary" disabled>
+            {t("Cargar .sav")}
+          </button>
+        </div>
+        <label className="switch">
+          <input type="checkbox" id="autosync" />
+          <span>{t("Autosync al guardar")}</span>
+          <button id="refresh" className="link-button">
+            {t("Actualizar ahora")}
+          </button>
+        </label>
+        <p id="liveStatus" role="status"></p>
+        <p id="saveInfo"></p>
+        <button id="openSaves" className="secondary">
+          {t("Guardados")}
+        </button>
+        <p id="error" role="alert" hidden></p>
+      </section>
+
+      <details className="drawer link-tracking">
+        <summary id="linkControlsTitle">{t("Link en el mapa")}</summary>
+        <div className="drawer-body">
+          <label className="switch">
+            <input type="checkbox" id="showLink" defaultChecked />
+            <span>{t("Mostrar Link")}</span>
+          </label>
+          <label className="switch">
+            <input type="checkbox" id="followLink" />
+            <span>{t("Seguir a Link al actualizar")}</span>
+          </label>
+
+          <div className="link-display-controls">
+            <div className="link-order">
+              <label htmlFor="linkOrder">{t("Orden del marcador")}</label>
+              <select id="linkOrder" defaultValue="below">
+                <option value="above">{t("Encima de los iconos")}</option>
+                <option value="below">{t("Debajo de los iconos")}</option>
+              </select>
+            </div>
+            <div className="link-opacity">
+              <div className="opacity-label">
+                <label htmlFor="linkOpacity">{t("Opacidad")}</label>
+                <output id="linkOpacityValue" htmlFor="linkOpacity">
+                  {t("45%")}
+                </output>
+              </div>
+              <input
+                type="range"
+                id="linkOpacity"
+                min="0"
+                max="100"
+                step="5"
+                defaultValue="45"
+              />
+            </div>
+          </div>
+          <button id="centerLink" className="secondary" disabled>
+            {t("Centrar en Link")}
+          </button>
+          <p id="linkPosition" role="status">
+            {t("La posición de Link no está disponible en este guardado.")}
+          </p>
+          <p>
+            {t(
+              "Posición del último guardado leído; se actualiza al guardar la partida.",
+            )}
+          </p>
+
+          <details>
+            <summary>{t("Diagnóstico de posición")}</summary>
+            <p id="linkDiagnostics"></p>
+          </details>
+        </div>
+      </details>
+
+      <details className="drawer recomp-live-section">
+        <summary id="recompLiveTitle">{t("TotK Recomp · Tiempo real")}</summary>
+        <div className="drawer-body">
+          <label className="switch">
+            <input type="checkbox" id="recompLiveToggle" />
+            <span>
+              {t("Sincronización en vivo (sin esperar autoguardado)")}
+            </span>
+            <button type="button" id="recompRescan" className="link-button">
+              {t("Reescanear")}
+            </button>
+          </label>
+          <p id="recompLiveInfo" role="status"></p>
+          <label className="switch">
+            <input type="checkbox" id="showGamePins" defaultChecked />
+            <span>{t("Mostrar balizas y sellos del juego")}</span>
+          </label>
+          <p className="fine">
+            {t("Haz clic derecho en el mapa para colocar una baliza luminosa.")}
+          </p>
+        </div>
+      </details>
 
       <footer>
         <details>

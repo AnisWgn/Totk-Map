@@ -3,7 +3,7 @@
   min-height: 0;
   overflow: auto;
   padding: 28px 32px 40px;
-  background: radial-gradient(ellipse at top right, #243d3b, #101c23 65%);
+  background: radial-gradient(ellipse at top right, #1e3230, #0d151a 65%);
   scrollbar-width: thin;
   scrollbar-color: #58656a transparent;
 }
@@ -32,7 +32,7 @@
 }
 
 .inventory-note {
-  border-top: 1px solid #65736b55;
+  border-top: 1px solid var(--line-soft);
   padding-top: 18px;
   margin-top: 32px;
 }
@@ -46,9 +46,9 @@
 
 .inventory-stat {
   padding: 18px;
-  border: 1px solid #65736b66;
-  border-radius: 8px;
-  background: #07141a66;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: #ffffff05;
 }
 
 .inventory-stat span {
@@ -75,8 +75,8 @@
   min-width: 0;
   background: #0c171c;
   color: var(--text);
-  border: 1px solid #526268;
-  border-radius: 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   padding: 12px;
   font: inherit;
   font-size: 12px;
@@ -97,7 +97,7 @@
   gap: 12px;
   font-size: 16px;
   font-weight: 500;
-  border-bottom: 1px solid #65736b66;
+  border-bottom: 1px solid var(--line-soft);
   padding-bottom: 12px;
   color: var(--gold);
 }
@@ -123,8 +123,8 @@
 .inventory-item {
   min-width: 0;
   padding: 16px;
-  border: 1px solid #52626899;
-  border-radius: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   background: #112229bb;
 }
 
@@ -170,7 +170,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  border-top: 1px solid #65736b33;
+  border-top: 1px solid var(--line-soft);
   padding: 8px 0;
 }
 
@@ -413,7 +413,7 @@
 .collection-table th,
 .collection-table td {
   padding: 10px;
-  border-bottom: 1px solid #65736b44;
+  border-bottom: 1px solid var(--line-soft);
   text-align: right;
 }
 .collection-table th {
@@ -436,7 +436,7 @@
   display: inline-block;
   font-size: 10px;
   color: var(--muted);
-  border: 1px solid #65736b88;
+  border: 1px solid var(--line);
   border-radius: 4px;
   padding: 3px 6px;
   margin-bottom: 12px;
@@ -468,7 +468,7 @@
   height: 16px;
 }
 .upgrade-tier {
-  border-top: 1px solid #65736b44;
+  border-top: 1px solid var(--line-soft);
   margin-top: 12px;
 }
 .upgrade-tier ul {
@@ -507,7 +507,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 12px 0;
-  border-bottom: 1px solid #65736b44;
+  border-bottom: 1px solid var(--line-soft);
 }
 .medal-bosses small {
   display: block;
@@ -589,10 +589,10 @@
   gap: 12px;
   text-align: left;
   padding: 12px;
-  border: 1px solid #65736b77;
+  border: 1px solid var(--line);
   background: #102229;
   color: var(--muted);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: 12px;
 }
 .collection-types button[aria-pressed="true"] {
@@ -640,7 +640,7 @@
 }
 .upgrade-planner[open] > .upgrade-plan-summary {
   padding-bottom: 22px;
-  border-bottom: 1px solid #65736b44;
+  border-bottom: 1px solid var(--line-soft);
   margin-bottom: 20px;
 }
 .upgrade-planner[open] > .upgrade-plan-summary::after {
