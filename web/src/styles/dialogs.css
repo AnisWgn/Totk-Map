@@ -143,79 +143,118 @@ h1.brand em {
   position: fixed;
   inset: 0;
   z-index: 1200;
-  background: radial-gradient(ellipse at 30% 20%, #1c2f33, #0b1114 75%);
+  overflow: auto;
+  background:
+    radial-gradient(ellipse at 14% 45%, #1c3730, transparent 58%), var(--bg);
+  color: var(--text);
+}
+.setup-layout {
+  width: min(100%, 1360px);
+  min-height: 100%;
+  margin: auto;
+  padding: clamp(26px, 5vw, 72px);
   display: grid;
-  place-items: center;
-  padding: 25px;
+  grid-template-rows: auto 1fr auto;
+  gap: clamp(32px, 6vh, 80px);
 }
-
-.setup-drag-strip {
-  display: none;
+html.is-electron .setup-layout {
+  padding-top: max(60px, 5vh);
 }
-
 html.is-electron .setup-drag-strip {
-  display: block;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 58px;
-  z-index: 0;
+  inset: 0 0 auto;
+  height: 40px;
   -webkit-app-region: drag;
 }
-
-.setup-card {
-  position: relative;
-  z-index: 1;
-  width: 440px;
-  max-width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: #121c21f2;
-  box-shadow: var(--shadow);
-  padding: 34px;
+.setup-header,
+.setup-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
 }
-
-html.is-electron .setup-card {
-  -webkit-app-region: no-drag;
+.setup-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 22px;
+  font-weight: 650;
 }
-
-.setup-logo {
-  width: 68px;
-  height: 68px;
-  margin-bottom: 22px;
+.setup-header .language-setting {
+  margin: 0;
 }
-
-.setup-card h2 {
-  font-size: 28px;
-  font-weight: 400;
-  margin: 12px 0 18px;
-  letter-spacing: -0.5px;
+.setup-main {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  align-content: center;
+  align-items: center;
+  gap: clamp(24px, 7vw, 110px);
 }
-
-.setup-card p {
+.setup-intro h2 {
+  font-size: clamp(42px, 6vw, 84px);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+  margin: 16px 0 20px;
+}
+.setup-intro p {
+  max-width: 48ch;
+  font-size: clamp(15px, 1.4vw, 19px);
+  line-height: 1.6;
   color: var(--muted);
-  font-size: 13px;
-  line-height: 1.7;
 }
-
-.setup-card .fine {
-  font-size: 11px;
+.setup-download {
+  border-inline-start: 1px solid var(--line);
+  padding-inline-start: clamp(24px, 4vw, 64px);
+  min-width: 0;
 }
-
-.setup-card button {
+.setup-download h3 {
+  margin: 0 0 18px;
+  font-size: 24px;
+}
+#prepareResources {
+  font-size: 15px;
+  padding: 12px 20px;
+}
+#setupProgress {
+  display: block;
   width: 100%;
-  margin: 15px 0;
-}
-
-.setup-card progress {
-  width: 100%;
+  height: 8px;
   accent-color: var(--gold);
-  height: 6px;
+  margin-top: 24px;
 }
-
+#setupStatus,
+#setupError {
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+#setupStatus {
+  color: var(--muted);
+}
 #setupError {
   color: #efb095;
+}
+.setup-footer {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+.setup-footer p {
+  max-width: 66ch;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+@media (max-width: 720px) {
+  .setup-main {
+    grid-template-columns: 1fr;
+  }
+  .setup-download {
+    padding: 20px 0 0;
+    border-inline-start: 0;
+    border-top: 1px solid var(--line);
+  }
 }
 
 .preparing #sidebar {
@@ -589,10 +628,6 @@ dialog h3 {
 .language-setting select {
   min-width: 0;
   font-size: 11px;
-}
-
-.setup-card .language-setting {
-  margin: 0 0 18px;
 }
 
 #aboutDialog .background-setting {

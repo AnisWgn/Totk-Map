@@ -186,7 +186,7 @@ export function ArmorCollection({
                   "No se pudo guardar el plan. Tus cambios siguen en esta ventana.",
                 )
               : t(
-                  "El plan se guarda con las preferencias de HyruleSync y se recalcula con la partida que consultas.",
+                  "El plan se guarda con las preferencias de Totk-Map y se recalcula con la partida que consultas.",
                 )}
           {saveStatus === "failed" && (
             <>

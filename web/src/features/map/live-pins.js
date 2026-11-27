@@ -1,3 +1,4 @@
+import { stampLabels, stampImage } from "./stamps.js";
 import L from "leaflet";
 import { esc } from "../../shared/utils.js";
 import { coordinateString, inLayer, ll, playerLayer } from "./model.js";
@@ -9,19 +10,6 @@ const PIN_STYLES = {
   Green: { hex: "#4ce08a", labelKey: "Verde" },
   Purple: { hex: "#b87aff", labelKey: "Morada" },
   LightBlue: { hex: "#5ce6e6", labelKey: "Celeste" },
-};
-
-const STAMP_LABELS = {
-  Sword: { symbol: "⚔", labelKey: "Espada" },
-  Pot: { symbol: "🍲", labelKey: "Olla" },
-  Human: { symbol: "👤", labelKey: "Persona" },
-  Rhombus: { symbol: "◆", labelKey: "Rombo" },
-  Heart: { symbol: "♥", labelKey: "Corazón" },
-  Star: { symbol: "★", labelKey: "Estrella" },
-  TreasureBox: { symbol: "▣", labelKey: "Cofre del tesoro" },
-  Skull: { symbol: "☠", labelKey: "Calavera" },
-  Leaf: { symbol: "❧", labelKey: "Hoja kolog" },
-  Ore: { symbol: "◈", labelKey: "Mineral" },
 };
 
 export const PIN_COLOR_LIST = [
@@ -60,6 +48,44 @@ export function createLivePinController({
     showGamePins = true,
     pinsLayerGroup = null,
     pendingPinTarget = null;
+
+  const stampKey = "totkmap.localStamps.v1";
+  let localStamps = [];
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(stampKey));
+
+    if (Array.isArray(saved))
+      localStamps = saved.filter(
+        (s) =>
+          s &&
+          Object.hasOwn(stampLabels, s.type) &&
+          [s.position?.x, s.position?.y, s.position?.z].every(Number.isFinite),
+      );
+  } catch {
+    /* Storage unavailable. */
+  }
+
+  function changeLocalStamp(type) {
+    if (!pendingPinTarget) return;
+
+    const { position, localIndex } = pendingPinTarget;
+    const next = [...localStamps];
+
+    if (localIndex != null) next.splice(localIndex, 1);
+    if (type) next.push({ position, type, layer: getLayer() });
+
+    try {
+      localStorage.setItem(stampKey, JSON.stringify(next));
+    } catch (error) {
+      toast(error.message);
+
+      return;
+    }
+    localStamps = next;
+    closePinPopover();
+    renderGameMarkers();
+  }
 
   function isLiveActive() {
     return liveState?.status === "connected" || liveState?.status === "bridge";
@@ -158,17 +184,26 @@ export function createLivePinController({
       pinsLayerGroup.addLayer(marker);
     }
 
-    for (const stamp of stamps) {
+    for (const stamp of [
+      ...stamps,
+      ...localStamps.map((s, localIndex) => ({
+        ...s,
+        localIndex,
+        slot: localIndex,
+      })),
+    ]) {
       if (stamp.layer !== currentLayer) continue;
 
-      const meta = STAMP_LABELS[stamp.type] || STAMP_LABELS.Star;
+      const label = Object.hasOwn(stampLabels, stamp.type)
+        ? stampLabels[stamp.type]
+        : stampLabels.Star;
       const title = t("Sello: {type} #{slot}", {
-        type: t(meta.labelKey),
+        type: t(label),
         slot: stamp.slot + 1,
       });
       const icon = L.divIcon({
         className: "game-stamp-marker",
-        html: `<span>${meta.symbol}</span>`,
+        html: `<img src="${stampImage(stamp.type)}" width="22" height="22" alt="">`,
         iconSize: [22, 22],
         iconAnchor: [11, 11],
       });
@@ -178,6 +213,14 @@ export function createLivePinController({
         alt: title,
         pane: "gamePins",
       });
+
+      if (stamp.localIndex != null)
+        marker.on("click", () =>
+          openPinPopover({
+            position: stamp.position,
+            localIndex: stamp.localIndex,
+          }),
+        );
       marker.bindTooltip(
         esc(title) +
           "<br><small>" +
@@ -199,9 +242,9 @@ export function createLivePinController({
       });
       const icon = L.divIcon({
         className: `game-pin-marker pin-${pin.color.toLowerCase()}`,
-        html: `<span style="--pin-color:${style.hex}"><i>${pin.slot + 1}</i></span>`,
-        iconSize: [28, 34],
-        iconAnchor: [14, 30],
+        html: `<span class="beacon-icon" style="--pin-swatch:${style.hex}" aria-hidden="true"></span>`,
+        iconSize: [24, 32],
+        iconAnchor: [12, 32],
       });
       const marker = L.marker(ll(pin.position), {
         icon,
@@ -304,11 +347,19 @@ export function createLivePinController({
     }
   }
 
-  function openPinPopover({ position, slot = "auto", existingColor = null }) {
+  function openPinPopover({
+    position,
+    slot = "auto",
+    existingColor = null,
+    localIndex = null,
+  }) {
     const popover = $("pinPopover");
 
     if (!popover || !position) return;
-    pendingPinTarget = { position, slot, existingColor };
+    pendingPinTarget = { position, slot, existingColor, localIndex };
+    $("localStampPicker").hidden = existingColor != null;
+    $("gamePinPicker").hidden = localIndex != null;
+    $("removeLocalStamp").hidden = localIndex == null;
     $("pinPopoverCoords").textContent = coordinateString(position);
     const removeBtn = $("removeGamePin");
 
@@ -381,7 +432,16 @@ export function createLivePinController({
     }
   }
 
+  function dismissPinPopoverOutside(event) {
+    const popover = $("pinPopover");
+
+    if (popover && !popover.hidden && !popover.contains(event.target)) {
+      closePinPopover();
+    }
+  }
+
   function bindControls() {
+    document.addEventListener("click", dismissPinPopoverOutside, true);
     if ($("recompLiveToggle")) {
       $("recompLiveToggle").onchange = async () => {
         const enable = $("recompLiveToggle").checked;
@@ -424,6 +484,11 @@ export function createLivePinController({
       $("removeGamePin").onclick = () => submitPin("Invalid");
     }
 
+    $("removeLocalStamp").onclick = () => changeLocalStamp(null);
+    document.querySelectorAll("[data-stamp]").forEach((btn) => {
+      btn.onclick = () => changeLocalStamp(btn.dataset.stamp);
+    });
+
     document.querySelectorAll("[data-pin-color]").forEach((btn) => {
       btn.onclick = () => submitPin(btn.dataset.pinColor);
     });
@@ -448,6 +513,7 @@ export function createLivePinController({
   }
 
   function dispose() {
+    document.removeEventListener("click", dismissPinPopoverOutside, true);
     disposed = true;
     clearTimeout(liveTimer);
   }

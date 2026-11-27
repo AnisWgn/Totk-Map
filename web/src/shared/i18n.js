@@ -5,6 +5,9 @@ export const I18N = (() => {
   let language = "en";
   const en = {
     ...collectionTranslations,
+    "Marcador de mapa": "Map marker",
+    "Sellos locales · solo en este mapa": "Local stamps · this map only",
+    "Quitar sello": "Remove stamp",
     Resumen: "Summary",
     "TU AVENTURA · DE UN VISTAZO": "YOUR ADVENTURE · AT A GLANCE",
     "Resumen de {file} · {time}": "Summary of {file} · {time}",
@@ -431,15 +434,13 @@ export const I18N = (() => {
     "Explorar archivos…": "Browse files…",
     "Explorar archivos": "Browse files",
     "Cargar guardado": "Load save",
-    "HYRULESYNC · PRIMER INICIO": "HYRULESYNC · FIRST RUN",
-    "TOTKMAP · PRIMER INICIO": "TOTKMAP · FIRST RUN",
+    "Primer inicio": "First launch",
+    "Recursos del mapa": "Map resources",
     "Prepara tu mapa": "Prepare your map",
     "Descarga una vez los mapas, iconos y el catálogo de ubicaciones (unos 44 MB). Después podrás usarlos sin conexión.":
       "Download the maps, icons and location catalog once (about 44 MB). You can then use them offline.",
-    "Los recursos se obtienen del repositorio de TotK Unexplored. Totkmap es una aplicación independiente y conserva los créditos de esos recursos.":
-      "Resources are downloaded from the TotK Unexplored repository. Totkmap is a standalone app and preserves their credits.",
-    "Los recursos se obtienen del repositorio de TotK Unexplored. HyruleSync es una aplicación independiente y conserva los créditos de esos recursos.":
-      "Resources are downloaded from the TotK Unexplored repository. HyruleSync is a standalone app and preserves their credits.",
+    "Los recursos se obtienen del repositorio de TotK Unexplored. Totk-Map es una aplicación independiente y conserva los créditos de esos recursos.":
+      "Resources are downloaded from the TotK Unexplored repository. Totk-Map is a standalone app and preserves their credits.",
     "Descargar recursos del mapa": "Download map resources",
     "Luego podrás elegir tu carpeta de guardados.":
       "You can then choose your save folder.",
@@ -499,7 +500,7 @@ export const I18N = (() => {
     "Preparando mapa…": "Preparing map…",
     "Reintentar descarga": "Retry download",
     "No se pudo conectar con Totkmap. ": "Could not connect to Totkmap. ",
-    "No se pudo conectar con HyruleSync. ": "Could not connect to HyruleSync. ",
+    "No se pudo conectar con Totk-Map. ": "Could not connect to Totk-Map. ",
     "No se pudo iniciar la descarga.": "Could not start the download.",
     "Acerca de, licencias y créditos": "About, licenses and credits",
     "Acerca de HyruleSync": "About HyruleSync",
@@ -510,7 +511,7 @@ export const I18N = (() => {
     Contribuidores: "Contributors",
     "Desarrollado por Neimex23 con amplia asistencia de Codex · GPT-6.1 · razonamiento Alto.":
       "Developed by Neimex23 with extensive assistance from Codex · GPT-6.1 · High reasoning.",
-    "Código de HyruleSync": "HyruleSync code",
+    "Código de Totk-Map": "Totk-Map code",
     "Ver licencia MIT": "View MIT license",
     "Ver licencia de Leaflet": "View Leaflet license",
     "Ver licencia de React": "View React license",
