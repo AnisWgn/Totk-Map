@@ -22,6 +22,18 @@ export function MapPanel({ hidden }) {
         </div>
         <button
           type="button"
+          id="toggleCompleted"
+          className="completed-toggle-btn active"
+          aria-pressed="true"
+          title={t(
+            "Mostrar u ocultar en semitransparente los iconos ya desbloqueados en tu partida",
+          )}
+        >
+          <i className="completed-toggle-dot" aria-hidden="true"></i>
+          <span>{t("Desbloqueados")}</span>
+        </button>
+        <button
+          type="button"
           id="recompLiveBadge"
           className="recomp-live-badge"
           hidden

@@ -75,7 +75,17 @@ export function createAppController(store, config = {}) {
     objects,
     routes,
     linkMarker,
-    renderFrame = null;
+    renderFrame = null,
+    viewportFrame = null,
+    mouseFrame = null;
+
+  const mountedMarkers = new Map();
+  const iconPool = new Map();
+  const preloadedImages = [];
+  let renderGen = 0,
+    lastRoutesKey = null,
+    lastRoutesPoints = null,
+    lastRoutesSnapshot = null;
 
   let snapshot = null,
     liveSnapshot = null,
@@ -84,6 +94,7 @@ export function createAppController(store, config = {}) {
 
   let layer = "surface",
     active = new Set(["hidden_koroks", "carry_koroks", "shrines"]),
+    showCompleted = true,
     points = [];
 
   let polling = false,
@@ -135,6 +146,14 @@ export function createAppController(store, config = {}) {
     toastTimer = setTimeout(() => ($("toast").hidden = true), 4500);
   }
 
+  function syncCompletedToggle() {
+    const btn = $("toggleCompleted");
+
+    if (!btn) return;
+    btn.classList.toggle("active", showCompleted);
+    btn.setAttribute("aria-pressed", String(showCompleted));
+  }
+
   function savePrefs() {
     try {
       localStorage.setItem(
@@ -144,6 +163,7 @@ export function createAppController(store, config = {}) {
           mode: $("showMode").value,
           layer,
           paths: $("showPaths").checked,
+          showCompleted,
         }),
       );
     } catch {}
@@ -179,6 +199,19 @@ export function createAppController(store, config = {}) {
     categories = Object.fromEntries(
       catalog.categories.map((category) => [category.id, category]),
     );
+    if (typeof Image === "function" && preloadedImages.length === 0) {
+      const urls = new Set(["tower.svg", "quest.svg"]);
+
+      for (const category of catalog.categories) {
+        if (category.icon) urls.add(`assets/icons/${category.icon}.png`);
+      }
+      for (const src of urls) {
+        const img = new Image();
+        img.decoding = "async";
+        img.src = src;
+        preloadedImages.push(img);
+      }
+    }
   }
 
   function updateCounts() {
@@ -369,6 +402,227 @@ export function createAppController(store, config = {}) {
     });
   }
 
+  const CHEST_BADGE_HTML =
+    '<span class="shrine-chests-badge" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7V5a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v9H2ZM2 7h12M7 6h2v4H7Z"/></svg></span>';
+
+  function buildTooltipHtml(p) {
+    return (
+      esc(p.name) +
+      "<br><small>" +
+      esc(showState(p)) +
+      (p.category === "shrines" ? "<br>" + esc(chestLabel(p)) : "") +
+      "</small>"
+    );
+  }
+
+  function getPointDivIcon(
+    p,
+    state,
+    hasAllChests,
+    textLabel,
+    size,
+    isSelected,
+  ) {
+    const css =
+      (textLabel ? "location-label" : "point-icon") +
+      " " +
+      state +
+      (isSelected ? " selected" : "");
+
+    if (textLabel) {
+      return L.divIcon({
+        className: css,
+        html: esc(p.name),
+        iconSize: [150, 24],
+        iconAnchor: [75, 12],
+      });
+    }
+
+    const poolKey = `${p.category}|${state}|${hasAllChests ? 1 : 0}|${size}|${isSelected ? 1 : 0}`;
+    let cached = iconPool.get(poolKey);
+
+    if (!cached) {
+      cached = L.divIcon({
+        className: css,
+        html:
+          `<img alt="" decoding="async" src="${pointIcon(p)}">` +
+          (hasAllChests ? CHEST_BADGE_HTML : ""),
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2],
+      });
+      iconPool.set(poolKey, cached);
+    }
+
+    return cached;
+  }
+
+  function renderRoutes() {
+    const showPaths = $("showPaths").checked;
+    const routesKey = showPaths ? "1" : "0";
+
+    if (
+      routesKey === lastRoutesKey &&
+      points === lastRoutesPoints &&
+      snapshot === lastRoutesSnapshot
+    ) {
+      return;
+    }
+
+    lastRoutesKey = routesKey;
+    lastRoutesPoints = points;
+    lastRoutesSnapshot = snapshot;
+    routes.clearLayers();
+
+    if (!showPaths) return;
+
+    for (const p of points)
+      if (p.routeCoordinates.length > 1)
+        L.polyline(p.routeCoordinates, {
+          color: "#e6d9a0",
+          weight: 1.5,
+          opacity: 0.85,
+          interactive: false,
+        }).addTo(routes);
+
+    const caves = new Map();
+
+    for (const p of points) {
+      if (p.category !== "caves" || pointState(p) === 1) continue;
+      if (!caves.has(p.name)) caves.set(p.name, []);
+      caves.get(p.name).push(p);
+    }
+    for (const group of caves.values())
+      if (group.length === 2)
+        L.polyline(
+          group.map((p) => p.latLng),
+          {
+            color: "#bfa574",
+            weight: 1.5,
+            dashArray: "4 4",
+            opacity: 0.8,
+            interactive: false,
+          },
+        ).addTo(routes);
+  }
+
+  function syncVisibleMarkers() {
+    const bounds = map.getBounds().pad(0.12),
+      zoom = map.getZoom(),
+      size = zoom < -3 ? 15 : zoom < -1.5 ? 20 : 27,
+      showLocationText = zoom >= -2.5,
+      canDiffLayers = typeof objects.removeLayer === "function";
+
+    if (!canDiffLayers) {
+      objects.clearLayers();
+      for (const p of points) {
+        if (!bounds.contains(p.latLng)) continue;
+
+        const state = mapPointState(p, snapshot),
+          textLabel = p.category === "locations" && showLocationText,
+          hasAllChests =
+            p.category === "shrines" &&
+            shrineChestState(snapshot?.shrineChests?.[p.index]) === "found",
+          isSelected = selected?.id === p.id;
+        const icon = getPointDivIcon(
+          p,
+          state,
+          hasAllChests,
+          textLabel,
+          size,
+          isSelected,
+        );
+        const marker = L.marker(p.latLng, {
+          icon,
+          title: p.name,
+          alt: p.name,
+          zIndexOffset: isSelected
+            ? 1000
+            : p.category === "locations"
+              ? -100
+              : state === "found"
+                ? -50
+                : 0,
+        });
+        marker.bindTooltip(buildTooltipHtml(p), { direction: "top" });
+        marker.on("click", () => detail(p, false));
+        objects.addLayer(marker);
+      }
+
+      return;
+    }
+
+    renderGen++;
+    for (const p of points) {
+      if (!bounds.contains(p.latLng)) continue;
+
+      const state = mapPointState(p, snapshot),
+        textLabel = p.category === "locations" && showLocationText,
+        hasAllChests =
+          p.category === "shrines" &&
+          shrineChestState(snapshot?.shrineChests?.[p.index]) === "found",
+        isSelected = selected?.id === p.id,
+        zIndex = isSelected
+          ? 1000
+          : p.category === "locations"
+            ? -100
+            : state === "found"
+              ? -50
+              : 0,
+        sig = `${state}|${hasAllChests ? 1 : 0}|${textLabel ? 1 : 0}|${size}|${isSelected ? 1 : 0}`;
+      const existing = mountedMarkers.get(p.id);
+
+      if (existing) {
+        existing.gen = renderGen;
+        if (existing.sig !== sig) {
+          const icon = getPointDivIcon(
+            p,
+            state,
+            hasAllChests,
+            textLabel,
+            size,
+            isSelected,
+          );
+          existing.marker.setIcon?.(icon);
+          existing.marker.setZIndexOffset?.(zIndex);
+          existing.sig = sig;
+        }
+        continue;
+      }
+
+      const icon = getPointDivIcon(
+        p,
+        state,
+        hasAllChests,
+        textLabel,
+        size,
+        isSelected,
+      );
+      const marker = L.marker(p.latLng, {
+        icon,
+        title: p.name,
+        alt: p.name,
+        zIndexOffset: zIndex,
+      });
+      marker.bindTooltip(() => buildTooltipHtml(p), { direction: "top" });
+      marker.on("click", () => detail(p, false));
+      objects.addLayer(marker);
+      mountedMarkers.set(p.id, { marker, sig, gen: renderGen });
+    }
+
+    for (const [id, entry] of mountedMarkers) {
+      if (entry.gen !== renderGen) {
+        objects.removeLayer(entry.marker);
+        mountedMarkers.delete(id);
+      }
+    }
+  }
+
+  function renderViewport() {
+    if (scope.disposed || !map || !catalog) return;
+    renderQuestMarkers();
+    syncVisibleMarkers();
+  }
+
   function render() {
     if (scope.disposed || !map || !catalog) return;
     renderLink();
@@ -380,89 +634,30 @@ export function createAppController(store, config = {}) {
       snapshot,
       query: $("search").value,
       mode: $("showMode").value,
+      showCompleted,
     });
     $("visibleCount").textContent = t("{n} puntos filtrados", {
       n: fmt(points.length),
     });
-    objects.clearLayers();
-    routes.clearLayers();
-    const bounds = map.getBounds().pad(0.15),
-      visible = points.filter((p) => bounds.contains(p.latLng));
-
-    if ($("showPaths").checked) {
-      for (const p of points)
-        if (p.routeCoordinates.length > 1)
-          L.polyline(p.routeCoordinates, {
-            color: "#e6d9a0",
-            weight: 1.5,
-            opacity: 0.85,
-            interactive: false,
-          }).addTo(routes);
-
-      const caves = new Map();
-
-      for (const p of points) {
-        if (p.category !== "caves" || pointState(p) === 1) continue;
-        if (!caves.has(p.name)) caves.set(p.name, []);
-        caves.get(p.name).push(p);
-      }
-      for (const group of caves.values())
-        if (group.length === 2)
-          L.polyline(
-            group.map((p) => p.latLng),
-            {
-              color: "#bfa574",
-              weight: 1.5,
-              dashArray: "4 4",
-              opacity: 0.8,
-              interactive: false,
-            },
-          ).addTo(routes);
-    }
-    for (const p of visible) {
-      const state = mapPointState(p, snapshot),
-        textLabel = p.category === "locations" && map.getZoom() >= -2.5,
-        size = map.getZoom() < -3 ? 15 : map.getZoom() < -1.5 ? 20 : 27;
-      const css =
-        (textLabel ? "location-label" : "point-icon") +
-        " " +
-        state +
-        (selected?.id === p.id ? " selected" : "");
-      const icon = L.divIcon({
-        className: css,
-        html: textLabel
-          ? esc(p.name)
-          : `<img alt="" src="${pointIcon(p)}">` +
-            (p.category === "shrines" &&
-            shrineChestState(snapshot?.shrineChests?.[p.index]) === "found"
-              ? '<span class="shrine-chests-badge" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7V5a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v9H2ZM2 7h12M7 6h2v4H7Z"/></svg></span>'
-              : ""),
-        iconSize: textLabel ? [150, 24] : [size, size],
-        iconAnchor: textLabel ? [75, 12] : [size / 2, size / 2],
-      });
-      const marker = L.marker(p.latLng, {
-        icon,
-        title: p.name,
-        alt: p.name,
-        zIndexOffset:
-          selected?.id === p.id ? 1000 : p.category === "locations" ? -100 : 0,
-      });
-      marker.bindTooltip(
-        esc(p.name) +
-          "<br><small>" +
-          esc(showState(p)) +
-          (p.category === "shrines" ? "<br>" + esc(chestLabel(p)) : "") +
-          "</small>",
-        { direction: "top" },
-      );
-      marker.on("click", () => detail(p, false));
-      objects.addLayer(marker);
-    }
+    renderRoutes();
+    syncVisibleMarkers();
   }
 
   // Leaflet can emit moveend and zoomend together; draw once per browser frame.
+  function scheduleViewportRender() {
+    if (viewportFrame !== null || renderFrame !== null) return;
+    viewportFrame = requestAnimationFrame(() => {
+      viewportFrame = null;
+      renderViewport();
+    });
+  }
+
   function scheduleRender() {
     if (renderFrame !== null) return;
+    if (viewportFrame !== null) {
+      cancelAnimationFrame(viewportFrame);
+      viewportFrame = null;
+    }
     renderFrame = requestAnimationFrame(() => {
       renderFrame = null;
       render();
@@ -814,6 +1009,8 @@ export function createAppController(store, config = {}) {
       ? prefs.mode
       : "missing";
     $("showPaths").checked = prefs.paths !== false;
+    showCompleted = prefs.showCompleted !== false;
+    syncCompletedToggle();
     buildCategories();
     updateCounts();
     // ZeldaMods: zoom 7 = 2 px/world unit; origin is x=-6000, z=-5000.
@@ -823,6 +1020,7 @@ export function createAppController(store, config = {}) {
     });
     map = L.map("map", {
       crs,
+      preferCanvas: true,
       minZoom: -5,
       maxZoom: 2,
       zoomSnap: 0.25,
@@ -862,13 +1060,18 @@ export function createAppController(store, config = {}) {
         : "surface",
     );
 
-    map.on("moveend zoomend", scheduleRender);
-    map.on(
-      "mousemove",
-      (e) =>
-        ($("mouseCoords").textContent =
-          `${Math.trunc(e.latlng.lng)}, ${Math.trunc(e.latlng.lat)}`),
-    );
+    map.on("moveend zoomend", scheduleViewportRender);
+    let pendingCoordsText = "";
+    map.on("mousemove", (e) => {
+      pendingCoordsText = `${Math.trunc(e.latlng.lng)}, ${Math.trunc(e.latlng.lat)}`;
+      if (mouseFrame !== null) return;
+      mouseFrame = requestAnimationFrame(() => {
+        mouseFrame = null;
+        if (!scope.disposed && $("mouseCoords")) {
+          $("mouseCoords").textContent = pendingCoordsText;
+        }
+      });
+    });
 
     $("centerLink").onclick = centerLink;
 
@@ -958,6 +1161,21 @@ export function createAppController(store, config = {}) {
       savePrefs();
       render();
     };
+
+    if ($("toggleCompleted")) {
+      $("toggleCompleted").onclick = () => {
+        showCompleted = !showCompleted;
+        if (
+          !showCompleted &&
+          ($("showMode").value === "all" || $("showMode").value === "found")
+        ) {
+          $("showMode").value = "missing";
+        }
+        syncCompletedToggle();
+        savePrefs();
+        render();
+      };
+    }
 
     $("search").oninput = scheduleRender;
 
@@ -1184,8 +1402,20 @@ export function createAppController(store, config = {}) {
     $("checkUpdates").onclick = () => checkUpdates(true);
 
     checkUpdates();
-    if ($("openUpdateTab"))
-      $("openUpdateTab").onclick = () => store.actions.setSaveView("update");
+    if ($("openUpdateTab")) {
+      $("openUpdateTab").onclick = () => {
+        store.actions.setSaveView("update");
+        const st = store.getSnapshot?.()?.updateState;
+
+        if (
+          st?.canAutoInstall &&
+          st.downloadStatus !== "downloading" &&
+          st.downloadStatus !== "applying"
+        ) {
+          store.actions.startUpdateDownload?.();
+        }
+      };
+    }
     $("viewChanges").onclick = showChanges;
     $("aboutChanges").onclick = showChanges;
     $("runInBackground").onchange = changeBackgroundMode;

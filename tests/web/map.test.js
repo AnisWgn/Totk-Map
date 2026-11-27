@@ -95,6 +95,13 @@ describe("map model", () => {
       ),
     ).toEqual([0, 1, 2]);
     expect(
+      filterMapPoints(points, {
+        ...options,
+        mode: "missing",
+        showCompleted: true,
+      }).map((p) => p.index),
+    ).toEqual([0, 1, 2, 3]);
+    expect(
       filterMapPoints(points, { ...options, mode: "found" }).map(
         (p) => p.index,
       ),

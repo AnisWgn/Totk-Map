@@ -359,9 +359,10 @@ export class UpdateChecker {
     this.downloadSpeed = 0;
     this.downloadError = "";
     this.downloadedFile = "";
+    this.autoApply = false;
   }
 
-  startDownload() {
+  startDownload({ autoApply = false } = {}) {
     if (
       !this.info.available ||
       !this.info.downloadUrl ||
@@ -377,6 +378,7 @@ export class UpdateChecker {
     if (!this.updatesDir) {
       throw new Error("Updates directory is not configured.");
     }
+    this.autoApply = Boolean(autoApply && this.canAutoInstall);
     if (this.downloadStatus === "downloading") {
       return { ok: true, status: this.downloadStatus };
     }
@@ -391,6 +393,13 @@ export class UpdateChecker {
         this.downloadPercent = 100;
         this.downloadStatus = "downloaded";
         this.downloadError = "";
+        if (this.autoApply) {
+          this.autoApply = false;
+          this.applyUpdate().catch((err) => {
+            this.downloadError = err?.message || "";
+          });
+          return { ok: true, status: "applying" };
+        }
         return { ok: true, status: "downloaded" };
       }
     } catch {}
@@ -409,6 +418,7 @@ export class UpdateChecker {
   }
 
   cancelDownload() {
+    this.autoApply = false;
     if (this.abortController) {
       this.abortController.abort();
       this.abortController = null;
@@ -518,6 +528,13 @@ export class UpdateChecker {
       this.downloadSpeed = 0;
       this.downloadError = "";
       this.downloadStatus = "downloaded";
+
+      if (this.autoApply && this.canAutoInstall) {
+        this.autoApply = false;
+        await this.applyUpdate().catch((applyErr) => {
+          this.downloadError = applyErr?.message || "";
+        });
+      }
     } catch (err) {
       if (fd !== null) {
         try {

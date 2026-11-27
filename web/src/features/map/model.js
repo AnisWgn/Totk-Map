@@ -72,26 +72,33 @@ export function prepareMapCatalog(data) {
 
 export function filterMapPoints(
   points,
-  { layer, active, snapshot, query = "", mode = "all" },
+  { layer, active, snapshot, query = "", mode = "all", showCompleted = false },
 ) {
   const search = norm(query.trim()),
     numeric = /^-?\d+[\s,;]+-?\d+(?:[\s,;]+-?\d+)?$/.test(search);
 
-  return points.filter(
-    (point) =>
-      inLayer(point, layer) &&
-      active.has(point.category) &&
-      (!search || numeric || point.searchText.includes(search)) &&
-      (mode === "all" ||
-        (mode === "discovered"
-          ? mapPointState(point, snapshot) === "discovered"
-          : mode === "chests"
-            ? point.category === "shrines" &&
-              shrineChestState(snapshot?.shrineChests?.[point.index]) ===
-                "missing"
-            : (snapshot?.states[point.index] ?? -1) ===
-              (mode === "missing" ? 0 : mode === "found" ? 1 : -1))),
-  );
+  return points.filter((point) => {
+    if (!inLayer(point, layer) || !active.has(point.category)) return false;
+    if (search && !numeric && !point.searchText.includes(search)) return false;
+    if (mode === "all") return true;
+
+    const rawState = snapshot?.states?.[point.index] ?? -1;
+
+    if (mode === "missing") {
+      return rawState === 0 || (showCompleted && rawState === 1);
+    }
+    if (mode === "discovered") {
+      return mapPointState(point, snapshot) === "discovered";
+    }
+    if (mode === "chests") {
+      return (
+        point.category === "shrines" &&
+        shrineChestState(snapshot?.shrineChests?.[point.index]) === "missing"
+      );
+    }
+
+    return rawState === (mode === "found" ? 1 : -1);
+  });
 }
 
 // Panning changes viewport bounds, but does not change the matching catalog points.
@@ -99,8 +106,21 @@ export function createMapPointFilter() {
   let previousPoints, previousSnapshot, previousKey, result;
 
   return (points, options) => {
-    const { layer, active, snapshot, query = "", mode = "all" } = options;
-    const key = JSON.stringify([layer, [...active], query, mode]);
+    const {
+      layer,
+      active,
+      snapshot,
+      query = "",
+      mode = "all",
+      showCompleted = false,
+    } = options;
+    const key = JSON.stringify([
+      layer,
+      [...active],
+      query,
+      mode,
+      Boolean(showCompleted),
+    ]);
 
     if (
       points !== previousPoints ||
