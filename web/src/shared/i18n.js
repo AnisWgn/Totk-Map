@@ -63,6 +63,7 @@ export const I18N = (() => {
     "Clic para revelar": "Click to reveal",
     "Volver a difuminar": "Blur again",
     "Cargando partida…": "Loading save…",
+    Partida: "Save",
     "Reconociendo el guardado configurado…": "Checking the configured save…",
     "Las imágenes de referencia requieren conexión.":
       "Reference images require an internet connection.",

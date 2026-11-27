@@ -3,7 +3,7 @@
   min-height: 0;
   overflow: auto;
   padding: 28px 32px 40px;
-  background: radial-gradient(ellipse at top right, #243d3b, #101c23 65%);
+  background: radial-gradient(ellipse at top right, #1e3230, #0d151a 65%);
   scrollbar-width: thin;
 }
 
@@ -35,16 +35,16 @@
   flex-direction: column;
   min-width: 0;
   padding: 20px;
-  border: 1px solid #65736b66;
-  border-radius: 8px;
-  background: #07141a66;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  background: #ffffff05;
 }
 
 .summary-card h2,
 .summary-section-heading h2 {
   margin: 0 0 16px;
   color: var(--gold);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
 }
 
@@ -58,26 +58,27 @@
 }
 
 .summary-card-value strong {
-  font-size: 32px;
-  font-weight: 500;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
 }
 
 .summary-card-value span {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .summary-track {
   height: 5px;
-  background: #65736b44;
-  border-radius: 4px;
+  background: #2a363c;
+  border-radius: 999px;
   overflow: hidden;
 }
 
 .summary-track > span {
   display: block;
   height: 100%;
-  background: var(--accent);
+  background: linear-gradient(90deg, #7ba08f, var(--accent));
   border-radius: inherit;
 }
 
@@ -182,6 +183,6 @@
 
   .view-tabs button {
     flex: 0 0 auto;
-    padding: 10px 12px;
+    padding: 8px 12px;
   }
 }

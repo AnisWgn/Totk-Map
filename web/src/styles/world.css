@@ -3,7 +3,7 @@
   min-height: 0;
   overflow: auto;
   padding: 28px 32px 44px;
-  background: radial-gradient(ellipse at top right, #29483e 0, #111e25 55%);
+  background: radial-gradient(ellipse at top right, #213b34 0, #0d181e 55%);
   scrollbar-width: thin;
   scrollbar-color: #58656a transparent;
 }
@@ -68,7 +68,7 @@
   margin: 22px 0 14px;
   padding: 18px 22px;
   border: 1px solid #6d806d66;
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: #0a151a66;
 }
 .world-progress > div:first-child {
@@ -94,7 +94,7 @@
   height: 7px;
   flex: 1;
   background: #61756c44;
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 .world-progress-track > span {
@@ -125,7 +125,7 @@
   background: #0e1a20;
   color: var(--text);
   border: 1px solid #52645d;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   padding: 11px 12px;
   font-size: 12px;
   min-width: 0;
@@ -145,7 +145,7 @@
 .world-card {
   background: #14242acc;
   border: 1px solid #53675d66;
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 .world-card[open] {
@@ -269,8 +269,8 @@
   padding: 35px 20px;
   margin: 20px 0;
   text-align: center;
-  border: 1px dashed #65736b88;
-  border-radius: 8px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
   color: var(--muted);
   font-size: 13px;
   line-height: 1.7;
@@ -291,7 +291,7 @@
 .world-character {
   border: 1px solid #53675d66;
   background: #14242acc;
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 20px;
   font-size: 12px;
   line-height: 1.7;
@@ -410,7 +410,7 @@
   padding: 14px 18px;
   margin: 20px 0;
   border: 1px solid #6d806d66;
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: #0a151a66;
 }
 .recipe-tips .inventory-glyph {
@@ -433,7 +433,7 @@
 .world-recipe {
   padding: 20px;
   border: 1px solid #53675d66;
-  border-radius: 8px;
+  border-radius: var(--radius);
   background: #14242acc;
   min-width: 0;
 }

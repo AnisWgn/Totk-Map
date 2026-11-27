@@ -3,7 +3,7 @@
   min-height: 0;
   overflow: auto;
   padding: 28px 32px 40px;
-  background: radial-gradient(ellipse at top right, #243d3b, #101c23 65%);
+  background: radial-gradient(ellipse at top right, #1e3230, #0d151a 65%);
   scrollbar-width: thin;
 }
 
@@ -34,8 +34,8 @@
   flex: 2;
   background: #0c171c;
   color: var(--text);
-  border: 1px solid #526268;
-  border-radius: 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
   padding: 12px;
   font-size: 12px;
 }
@@ -53,9 +53,9 @@
 
 .quest-card {
   min-width: 0;
-  border: 1px solid #52626899;
+  border: 1px solid var(--line);
   background: #112229bb;
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 18px;
 }
 
@@ -221,7 +221,7 @@
 
 .quest-save-details {
   margin-top: 16px;
-  border-top: 1px solid #65736b44;
+  border-top: 1px solid var(--line-soft);
   padding-top: 12px;
   font-size: 10px;
 }
