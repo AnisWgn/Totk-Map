@@ -342,97 +342,41 @@ export async function startElectronApp(
       String(filePath).toLowerCase().endsWith(".exe")
     ) {
       const portableTarget = process.env.PORTABLE_EXECUTABLE_FILE;
-      if (portableTarget && String(assetName).includes("-portable.exe")) {
-        const scriptPath = path.join(
-          os.tmpdir(),
-          `totkmap-portable-update-${process.pid}.ps1`,
+      const portable = String(assetName).endsWith("-portable.exe");
+      if (portable !== Boolean(portableTarget)) {
+        throw new Error(
+          "This package does not match your installation. Use the direct download instead.",
         );
-        const script = [
-          "param([int]$TargetPid, [string]$SourceExe, [string]$DestExe)",
-          "$ErrorActionPreference = 'SilentlyContinue'",
-          "for ($i = 0; $i -lt 120; $i++) {",
-          "  if (-not (Get-Process -Id $TargetPid -ErrorAction SilentlyContinue)) { break }",
-          "  Start-Sleep -Milliseconds 250",
-          "}",
-          "$copied = $false",
-          "for ($attempt = 0; $attempt -lt 80; $attempt++) {",
-          "  try {",
-          "    Copy-Item -LiteralPath $SourceExe -Destination $DestExe -Force -ErrorAction Stop",
-          "    $copied = $true",
-          "    break",
-          "  } catch {",
-          "    Start-Sleep -Milliseconds 300",
-          "  }",
-          "}",
-          "if ($copied) {",
-          "  Remove-Item -LiteralPath $SourceExe -Force -ErrorAction SilentlyContinue",
-          "}",
-          "$workDir = Split-Path -Parent $DestExe",
-          "Start-Process -FilePath $DestExe -WorkingDirectory $workDir",
-          "Remove-Item -LiteralPath $PSCommandPath -Force -ErrorAction SilentlyContinue",
-        ].join("\r\n");
-        fs.writeFileSync(scriptPath, script, "utf8");
+      }
+      const temp = os.tmpdir();
+      const scriptPath = path.join(temp, `totkmap-update-${process.pid}.ps1`);
+      fs.copyFileSync(path.join(__dirname, "apply-update.ps1"), scriptPath);
+      try {
         const child = spawnProcess(
           "powershell.exe",
           [
             "-NoProfile",
-            "-WindowStyle",
-            "Hidden",
+            "-NonInteractive",
             "-ExecutionPolicy",
             "Bypass",
             "-File",
             scriptPath,
             String(process.pid),
             filePath,
-            portableTarget,
+            portableTarget || process.execPath,
+            portable ? "portable" : "setup",
           ],
-          { detached: true, stdio: "ignore", windowsHide: true },
+          { cwd: temp, detached: true, stdio: "ignore", windowsHide: true },
         );
-        child?.unref?.();
-      } else {
-        const scriptPath = path.join(
-          os.tmpdir(),
-          `totkmap-nsis-update-${process.pid}.ps1`,
-        );
-        const script = [
-          "param([int]$TargetPid, [string]$InstallerExe, [string]$AppExe)",
-          "$ErrorActionPreference = 'SilentlyContinue'",
-          "for ($i = 0; $i -lt 120; $i++) {",
-          "  if (-not (Get-Process -Id $TargetPid -ErrorAction SilentlyContinue)) { break }",
-          "  Start-Sleep -Milliseconds 250",
-          "}",
-          "Start-Sleep -Milliseconds 300",
-          "$proc = Start-Process -FilePath $InstallerExe -ArgumentList @('--updated', '--force-run', '/S') -PassThru -WindowStyle Hidden",
-          "if ($proc) {",
-          "  $proc.WaitForExit(180000) | Out-Null",
-          "}",
-          "Start-Sleep -Milliseconds 800",
-          "$appName = [System.IO.Path]::GetFileNameWithoutExtension($AppExe)",
-          "$running = Get-Process -Name $appName -ErrorAction SilentlyContinue",
-          "if (-not $running -and (Test-Path -LiteralPath $AppExe)) {",
-          "  Start-Process -FilePath $AppExe -WorkingDirectory (Split-Path -Parent $AppExe)",
-          "}",
-          "Remove-Item -LiteralPath $InstallerExe -Force -ErrorAction SilentlyContinue",
-          "Remove-Item -LiteralPath $PSCommandPath -Force -ErrorAction SilentlyContinue",
-        ].join("\r\n");
-        fs.writeFileSync(scriptPath, script, "utf8");
-        const child = spawnProcess(
-          "powershell.exe",
-          [
-            "-NoProfile",
-            "-WindowStyle",
-            "Hidden",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-File",
-            scriptPath,
-            String(process.pid),
-            filePath,
-            process.execPath,
-          ],
-          { detached: true, stdio: "ignore", windowsHide: true },
-        );
-        child?.unref?.();
+        // Do not close Totkmap if Windows could not even start the helper.
+        await new Promise((resolve, reject) => {
+          child.once("error", reject);
+          child.once("spawn", resolve);
+        });
+        child.unref();
+      } catch (error) {
+        fs.rmSync(scriptPath, { force: true });
+        throw error;
       }
 
       isQuitting = true;
@@ -455,7 +399,8 @@ export async function startElectronApp(
     preferredPort: DEFAULT_LOOPBACK_PORT,
     enablePageLifetimeExit: false,
     onSettingsChanged: () => refreshTrayMenu(),
-    onApplyUpdate: applyDownloadedUpdate,
+    onApplyUpdate:
+      platform === "win32" && app.isPackaged ? applyDownloadedUpdate : null,
     updateFetchImpl,
   });
 
