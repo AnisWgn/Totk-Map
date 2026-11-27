@@ -6,6 +6,15 @@ function Write-UpdateLog([string]$message) {
 }
 try {
     Write-UpdateLog "Starting $Mode update to $Version"
+    if (-not (Test-Path -LiteralPath $Package -PathType Leaf)) { throw "Missing download: $Package" }
+    if ($Mode -eq 'setup') {
+        # Hand off to the real installer before asking Electron to release its files.
+        $installDir = Split-Path -Parent $Target
+        $installer = Start-Process -FilePath $Package -ArgumentList "/S --updated /D=$installDir" -PassThru
+    }
+    [Console]::Out.WriteLine('TOTKMAP_UPDATE_READY')
+    [Console]::Out.Flush()
+    $handedOff = $true
     $old = Get-Process -Id $TargetPid -ErrorAction SilentlyContinue
     if ($old -and -not $old.WaitForExit(60000)) { throw 'Totkmap did not exit.' }
 
@@ -25,9 +34,6 @@ try {
         Remove-Item -LiteralPath "$staged.bak" -Force -ErrorAction SilentlyContinue
         Start-Process -FilePath $Target -WorkingDirectory (Split-Path -Parent $Target)
     } else {
-        # NSIS requires /D last and unquoted, even when the directory contains spaces.
-        $installDir = Split-Path -Parent $Target
-        $installer = Start-Process -FilePath $Package -ArgumentList "/S --updated /D=$installDir" -PassThru
         $installer.WaitForExit()
         Write-UpdateLog "Installer exit code: $($installer.ExitCode)"
         if ($installer.ExitCode -ne 0) { throw "Installer exit code: $($installer.ExitCode)" }
@@ -42,6 +48,7 @@ try {
     Remove-Item -LiteralPath $Package -Force -ErrorAction SilentlyContinue
 } catch {
     Write-UpdateLog "Update failed: $($_.Exception.Message)"
+    if (-not $handedOff) { [Console]::Error.WriteLine($_.Exception.Message); exit 1 }
     Add-Type -AssemblyName System.Windows.Forms
     [void][Windows.Forms.MessageBox]::Show("Update failed: $($_.Exception.Message)`n`nDownloaded package: $Package", 'Totkmap')
     exit 1
