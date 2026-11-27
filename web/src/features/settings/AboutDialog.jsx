@@ -60,7 +60,7 @@ export function AboutDialog() {
           )}
         </p>
 
-        <h3>{t("Código de HyruleSync")}</h3>
+        <h3>{t("Código de Totk-Map")}</h3>
         <p>
           {t("MIT · Copyright © 2026 Neimex23 and HyruleSync contributors")}
         </p>

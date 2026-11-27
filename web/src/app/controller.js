@@ -1301,7 +1301,7 @@ export function createAppController(store, config = {}) {
     } catch (e) {
       $("setup").hidden = false;
       $("setupError").textContent =
-        t("No se pudo conectar con Totkmap. ") + e.message;
+        t("No se pudo conectar con Totk-Map. ") + e.message;
     }
     setTimeout(boot, 1000);
   }

@@ -7,8 +7,8 @@ export const collectionTranslations = {
   "Guardando plan…": "Saving plan…",
   "No se pudo guardar el plan. Tus cambios siguen en esta ventana.":
     "The plan could not be saved. Your changes remain in this window.",
-  "El plan se guarda con las preferencias de HyruleSync y se recalcula con la partida que consultas.":
-    "The plan is saved with HyruleSync preferences and recalculated for the save you are viewing.",
+  "El plan se guarda con las preferencias de Totk-Map y se recalcula con la partida que consultas.":
+    "The plan is saved with Totk-Map preferences and recalculated for the save you are viewing.",
   "Hay {n} piezas sin nivel verificado; su coste no está incluido.":
     "{n} pieces have no verified level; their cost is excluded.",
   "Tu plan de mejoras": "Your upgrade plan",

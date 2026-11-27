@@ -125,6 +125,13 @@ describe("TotK Recomp Live Sync & Map Pin Picker UI", () => {
       const popover = document.getElementById("pinPopover");
       expect(popover.hidden).toBe(false);
 
+      fireEvent.click(document.getElementById("pinPopoverTitle"));
+      expect(popover.hidden).toBe(false);
+      fireEvent.click(document.getElementById("map"));
+      expect(popover.hidden).toBe(true);
+      expect(setPinCalls).toHaveLength(0);
+      realMap.fire("contextmenu", { latlng: L.latLng(780, 450) });
+
       // Click Red pin button -> sends POST api/set-pin
       const redBtn = document.querySelector('[data-pin-color="Red"]');
       fireEvent.click(redBtn);

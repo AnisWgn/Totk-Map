@@ -641,44 +641,30 @@ main {
   font-weight: 600;
 }
 
-.game-pin-marker > span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.beacon-icon {
+  display: block;
   width: 24px;
-  height: 24px;
-  margin: 0 auto;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  background: var(--pin-color, #ff5a52);
-  border: 2px solid #ffffffdd;
-  box-shadow:
-    0 2px 8px #000c,
-    0 0 12px var(--pin-color, #ff5a52);
+  height: 32px;
+  background: var(--pin-swatch);
+  mask: url("../features/map/beacon.svg") center / contain no-repeat;
 }
 
-.game-pin-marker > span > i {
-  font-style: normal;
-  font-size: 10px;
-  font-weight: 800;
-  color: #0e171b;
-  transform: rotate(45deg);
+.game-pin-marker {
+  filter: drop-shadow(0 1px 2px #071215);
 }
 
-.game-stamp-marker > span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #142228ee;
-  border: 1.5px solid #e6d9a0cc;
-  color: #f4e8be;
-  font-size: 12px;
-  box-shadow: 0 2px 6px #000a;
+.game-stamp-marker img {
+  display: block;
+  filter: drop-shadow(0 1px 2px #000);
 }
-
+.stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+.stamp-grid button {
+  padding: 4px;
+}
 .game-warp-marker > span {
   display: flex;
   align-items: center;
@@ -699,6 +685,8 @@ main {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 300px;
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
   max-width: calc(100% - 36px);
   z-index: 650;
   background: #121c21f8;
@@ -768,12 +756,9 @@ main {
   background: #223840;
 }
 
-.pin-color-btn > i {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--pin-swatch);
-  box-shadow: 0 0 8px var(--pin-swatch);
+.pin-color-btn .beacon-icon {
+  width: 15px;
+  height: 20px;
   flex-shrink: 0;
 }
 
