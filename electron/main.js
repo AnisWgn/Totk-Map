@@ -336,7 +336,7 @@ export async function startElectronApp(
   const systemCulture =
     typeof app.getLocale === "function" ? app.getLocale() : undefined;
 
-  async function applyDownloadedUpdate({ filePath, assetName }) {
+  async function applyDownloadedUpdate({ filePath, assetName, version }) {
     if (
       platform === "win32" &&
       String(filePath).toLowerCase().endsWith(".exe")
@@ -365,6 +365,7 @@ export async function startElectronApp(
             filePath,
             portableTarget || process.execPath,
             portable ? "portable" : "setup",
+            version,
           ],
           { cwd: temp, detached: true, stdio: "ignore", windowsHide: true },
         );
