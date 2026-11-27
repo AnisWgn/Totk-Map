@@ -1,4 +1,5 @@
 import cp from "node:child_process";
+import { waitForUpdateHandoff } from "./update-handoff.js";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -367,13 +368,14 @@ export async function startElectronApp(
             portable ? "portable" : "setup",
             version,
           ],
-          { cwd: temp, detached: true, stdio: "ignore", windowsHide: true },
+          {
+            cwd: temp,
+            detached: true,
+            stdio: ["ignore", "pipe", "pipe"],
+            windowsHide: true,
+          },
         );
-        // Do not close Totkmap if Windows could not even start the helper.
-        await new Promise((resolve, reject) => {
-          child.once("error", reject);
-          child.once("spawn", resolve);
-        });
+        await waitForUpdateHandoff(child);
         child.unref();
       } catch (error) {
         fs.rmSync(scriptPath, { force: true });
